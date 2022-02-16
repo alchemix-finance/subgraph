@@ -1,0 +1,15 @@
+# ignore log output
+*.log
+
+# ignore all dotfiles except the whitelisted ones
+.*
+!.env.example
+!.github
+!.gitignore
+!.husky
+!.prettierrc
+
+# ignore build output and dependencies
+build/
+generated/
+node_modules/

@@ -1,0 +1,395 @@
+###############################################################################
+# GENERIC
+###############################################################################
+
+type Transaction @entity {
+  id: ID!
+  block: BigInt!
+  events: [Event!]! @derivedFrom(field: "transaction")
+}
+
+interface Event {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+interface Contract {
+  id: ID!
+  events: [Event!]! @derivedFrom(field: "contract")
+}
+
+###############################################################################
+# ALCHEMIST
+###############################################################################
+
+type Alchemist implements Contract @entity {
+  id: ID!
+  events: [Event!]! @derivedFrom(field: "contract")
+}
+
+interface AlchemistEvent {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistAccountAddedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistAccountRemovedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistAddUnderlyingTokenEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistAddYieldTokenEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistAdminUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistApproveMintEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistApproveWithdrawEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistBurnEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistDepositEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistDonateEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistHarvestEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistKeeperSetEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistLiquidateEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistLiquidationLimitUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistMaximumExpectedValueUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistMaximumLossUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistMinimumCollateralizationUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistMintEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistMintingLimitUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistPendingAdminUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistProtocolFeeReceiverUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistProtocolFeeUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistRepayEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistRepayLimitUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistSentinelSetEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistSnapEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistTokenAdapterUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistTransmuterUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistUnderlyingTokenEnabledEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistWhitelistDisabledEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistWhitelistEnabledEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistWithdrawEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type AlchemistYieldTokenEnabledEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+###############################################################################
+# TRANSMUTER
+###############################################################################
+
+type Transmuter implements Contract @entity {
+  id: ID!
+  events: [Event!]! @derivedFrom(field: "contract")
+}
+
+interface TransmuterEvent {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterAccountAddedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterAccountRemovedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterAdminUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterClaimEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterDepositEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterExchangeEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterPauseUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterPendingAdminUpdatedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterRoleAdminChangedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterRoleGrantedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterRoleRevokedEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterWhitelistDisabledEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterWhitelistEnabledEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterWithdrawEvent implements Event & AlchemistEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+###############################################################################
+# TRANSMUTER BUFFER
+###############################################################################
+
+type TransmuterBuffer implements Contract @entity {
+  id: ID!
+  events: [Event!]! @derivedFrom(field: "contract")
+}
+
+interface TransmuterBufferEvent {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterBufferRefreshStrategiesEvent implements Event & TransmuterBufferEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterBufferRegisterAssetEvent implements Event & TransmuterBufferEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterBufferRoleAdminChangedEvent implements Event & TransmuterBufferEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterBufferRoleGrantedEvent implements Event & TransmuterBufferEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterBufferRoleRevokedEvent implements Event & TransmuterBufferEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterBufferSetAlchemistEvent implements Event & TransmuterBufferEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterBufferSetFlowRateEvent implements Event & TransmuterBufferEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
+
+type TransmuterBufferSetSourceEvent implements Event & TransmuterBufferEvent @entity {
+  id: ID!
+  contract: Contract!
+  transaction: Transaction!
+}
