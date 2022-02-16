@@ -5,9 +5,9 @@ import { DataSource } from './utils/types';
 const TransmuterBufferInterface = new utils.Interface(require('../abis/TransmuterBuffer.json'));
 const TransmuterBufferEvents = Object.values(TransmuterBufferInterface.events);
 
-export function createTransmuterBuffer(address: string, block: number): DataSource {
+export function createTransmuterBuffer(name: string, address: string, block: number): DataSource {
   return {
-    name: 'TransmuterBuffer',
+    name,
     network: 'testnet',
     kind: 'ethereum/contract',
     mapping: {

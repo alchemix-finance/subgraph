@@ -2,9 +2,9 @@ import { createAlchemist } from './sources/Alchemist';
 import { createTransmuter } from './sources/Transmuter';
 import { createTransmuterBuffer } from './sources/TransmuterBuffer';
 
-import AlchemistDeployment from './artifacts/localhost/AlchemistV2_alUSD.json';
-import TransmuterDeployment from './artifacts/localhost/TransmuterV2_USDC.json';
-import TransmuterBufferDeployment from './artifacts/localhost/TransmuterBuffer_alUSD.json';
+function fromDeployment(artifact: string): string {
+  return require(`./artifacts/localhost/${artifact}.json`).address;
+}
 
 const block = 13263419;
 
@@ -16,8 +16,13 @@ export default {
     file: './schema.graphql',
   },
   dataSources: [
-    createAlchemist(AlchemistDeployment.address, block),
-    createTransmuter(TransmuterDeployment.address, block),
-    createTransmuterBuffer(TransmuterBufferDeployment.address, block),
+    createAlchemist('AlchemistV2_alUSD', fromDeployment('AlchemistV2_alUSD'), block),
+    createAlchemist('AlchemistV2_alETH', fromDeployment('AlchemistV2_alETH'), block),
+    createTransmuter('TransmuterV2_DAI', fromDeployment('TransmuterV2_DAI'), block),
+    createTransmuter('TransmuterV2_USDC', fromDeployment('TransmuterV2_USDC'), block),
+    createTransmuter('TransmuterV2_USDT', fromDeployment('TransmuterV2_USDT'), block),
+    createTransmuter('TransmuterV2_ETH', fromDeployment('TransmuterV2_ETH'), block),
+    createTransmuterBuffer('TransmuterBuffer_alUSD', fromDeployment('TransmuterBuffer_alUSD'), block),
+    createTransmuterBuffer('TransmuterBuffer_alETH', fromDeployment('TransmuterBuffer_alETH'), block),
   ],
 };

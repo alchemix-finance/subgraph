@@ -5,9 +5,9 @@ import { DataSource } from './utils/types';
 const AlchemistInterface = new utils.Interface(require('../abis/Alchemist.json'));
 const AlchemistEvents = Object.values(AlchemistInterface.events);
 
-export function createAlchemist(address: string, block: number): DataSource {
+export function createAlchemist(name: string, address: string, block: number): DataSource {
   return {
-    name: 'Alchemist',
+    name,
     network: 'testnet',
     kind: 'ethereum/contract',
     mapping: {
