@@ -7,7 +7,7 @@
     "codegen": "graph codegen subgraph.js --output-dir subgraph/generated --skip-migrations",
     "build": "graph build subgraph.js --skip-migrations",
     "predeploy": "graph create alchemix/alchemix --node http://127.0.0.1:8020 || true",
-    "deploy": "graph deploy alchemix/alchemix subgraph.js --ipfs http://localhost:5001 --node http://127.0.0.1:8020/",
+    "deploy": "graph deploy alchemix/alchemix subgraph.js --ipfs http://localhost:5001 --node http://127.0.0.1:8020/ --version-label local",
     "lint": "prettier --ignore-path .gitignore --list-different \"**/*.{ts,js,json,yaml}\"",
     "script": "ts-node scripts"
   },

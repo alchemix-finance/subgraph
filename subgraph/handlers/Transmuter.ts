@@ -1,4 +1,4 @@
-import { ethereum } from '@graphprotocol/graph-ts';
+import { Address, Bytes, Entity, ethereum } from '@graphprotocol/graph-ts';
 import {
   Transmuter,
   TransmuterAccountAddedEvent,
@@ -32,8 +32,7 @@ import {
   WhitelistEnabled,
   Withdraw,
 } from '../generated/Transmuter/Transmuter';
-import { uniqueEventId } from '../utils/id';
-import { getOrCreateTransaction } from '../utils/transaction';
+import { createEvent } from '../utils/entities';
 
 function getOrCreateTransmuter(event: ethereum.Event): Transmuter {
   let entity = Transmuter.load(event.address.toHex());
@@ -46,128 +45,108 @@ function getOrCreateTransmuter(event: ethereum.Event): Transmuter {
   return entity;
 }
 
-export function handleAccountAdded(event: AccountAdded): void {
+function createTransmuterEvent<TEvent extends Entity>(event: ethereum.Event): TEvent {
   const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterAccountAddedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createEvent<TEvent>(event);
+  entity.setString('contract', contract.id);
+
+  return entity;
+}
+
+export function handleAccountAdded(event: AccountAdded): void {
+  const entity = createTransmuterEvent<TransmuterAccountAddedEvent>(event);
+  entity.account = event.params.account;
   entity.save();
 }
 
 export function handleAccountRemoved(event: AccountRemoved): void {
-  const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterAccountRemovedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterEvent<TransmuterAccountRemovedEvent>(event);
+  entity.account = event.params.account;
   entity.save();
 }
 
 export function handleAdminUpdated(event: AdminUpdated): void {
-  const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterAdminUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterEvent<TransmuterAdminUpdatedEvent>(event);
+  entity.admin = event.params.admin;
   entity.save();
 }
 
 export function handleClaim(event: Claim): void {
-  const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterClaimEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterEvent<TransmuterClaimEvent>(event);
+  entity.amount = event.params.amount;
+  entity.recipient = event.params.recipient;
+  entity.sender = event.params.sender;
+  // NOTE: This shouldn't be necessary. Implicit type conversion for address
+  // arrays seems to be missing.
+  entity.yTokens = event.params.yTokens.map<Bytes>((item) => changetype<Bytes>(item));
   entity.save();
 }
 
 export function handleDeposit(event: Deposit): void {
-  const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterDepositEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterEvent<TransmuterDepositEvent>(event);
+  entity.amount = event.params.amount;
+  entity.owner = event.params.owner;
+  entity.sender = event.params.sender;
   entity.save();
 }
 
 export function handleExchange(event: Exchange): void {
-  const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterExchangeEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterEvent<TransmuterExchangeEvent>(event);
+  entity.amount = event.params.amount;
+  entity.sender = event.params.sender;
   entity.save();
 }
 
 export function handlePauseUpdated(event: PauseUpdated): void {
-  const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterPauseUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterEvent<TransmuterPauseUpdatedEvent>(event);
+  entity.isPaused = event.params.isPaused;
   entity.save();
 }
 
 export function handlePendingAdminUpdated(event: PendingAdminUpdated): void {
-  const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterPendingAdminUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterEvent<TransmuterPendingAdminUpdatedEvent>(event);
+  entity.pendingAdmin = event.params.pendingAdmin;
   entity.save();
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
-  const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterRoleAdminChangedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterEvent<TransmuterRoleAdminChangedEvent>(event);
+  entity.newAdminRole = event.params.newAdminRole;
+  entity.previousAdminRole = event.params.previousAdminRole;
+  entity.role = event.params.role;
   entity.save();
 }
 
 export function handleRoleGranted(event: RoleGranted): void {
-  const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterRoleGrantedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterEvent<TransmuterRoleGrantedEvent>(event);
+  entity.account = event.params.account;
+  entity.role = event.params.role;
+  entity.sender = event.params.sender;
   entity.save();
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
-  const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterRoleRevokedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterEvent<TransmuterRoleRevokedEvent>(event);
+  entity.account = event.params.account;
+  entity.role = event.params.role;
+  entity.sender = event.params.sender;
   entity.save();
 }
 
 export function handleWhitelistDisabled(event: WhitelistDisabled): void {
-  const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterWhitelistDisabledEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterEvent<TransmuterWhitelistDisabledEvent>(event);
   entity.save();
 }
 
 export function handleWhitelistEnabled(event: WhitelistEnabled): void {
-  const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterWhitelistEnabledEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterEvent<TransmuterWhitelistEnabledEvent>(event);
   entity.save();
 }
 
 export function handleWithdraw(event: Withdraw): void {
-  const contract = getOrCreateTransmuter(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterWithdrawEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterEvent<TransmuterWithdrawEvent>(event);
+  entity.amount = event.params.amount;
+  entity.recipient = event.params.recipient;
+  entity.sender = event.params.sender;
   entity.save();
 }

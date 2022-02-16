@@ -1,4 +1,4 @@
-import { ethereum } from '@graphprotocol/graph-ts';
+import { Entity, ethereum } from '@graphprotocol/graph-ts';
 import {
   TransmuterBuffer,
   TransmuterBufferRefreshStrategiesEvent,
@@ -20,8 +20,7 @@ import {
   SetFlowRate,
   SetSource,
 } from '../generated/TransmuterBuffer/TransmuterBuffer';
-import { uniqueEventId } from '../utils/id';
-import { getOrCreateTransaction } from '../utils/transaction';
+import { createEvent } from '../utils/entities';
 
 function getOrCreateTransmuterBuffer(event: ethereum.Event): TransmuterBuffer {
   let entity = TransmuterBuffer.load(event.address.toHex());
@@ -34,74 +33,66 @@ function getOrCreateTransmuterBuffer(event: ethereum.Event): TransmuterBuffer {
   return entity;
 }
 
-export function handleRefreshStrategies(event: RefreshStrategies): void {
+function createTransmuterBufferEvent<TEvent extends Entity>(event: ethereum.Event): TEvent {
   const contract = getOrCreateTransmuterBuffer(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterBufferRefreshStrategiesEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createEvent<TEvent>(event);
+  entity.setString('contract', contract.id);
+
+  return entity;
+}
+
+export function handleRefreshStrategies(event: RefreshStrategies): void {
+  const entity = createTransmuterBufferEvent<TransmuterBufferRefreshStrategiesEvent>(event);
   entity.save();
 }
 
 export function handleRegisterAsset(event: RegisterAsset): void {
-  const contract = getOrCreateTransmuterBuffer(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterBufferRegisterAssetEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterBufferEvent<TransmuterBufferRegisterAssetEvent>(event);
+  entity.transmuter = event.params.transmuter;
+  entity.underlyingToken = event.params.underlyingToken;
   entity.save();
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {
-  const contract = getOrCreateTransmuterBuffer(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterBufferRoleAdminChangedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterBufferEvent<TransmuterBufferRoleAdminChangedEvent>(event);
+  entity.newAdminRole = event.params.newAdminRole;
+  entity.previousAdminRole = event.params.previousAdminRole;
+  entity.role = event.params.role;
   entity.save();
 }
 
 export function handleRoleGranted(event: RoleGranted): void {
-  const contract = getOrCreateTransmuterBuffer(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterBufferRoleGrantedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterBufferEvent<TransmuterBufferRoleGrantedEvent>(event);
+  entity.account = event.params.account;
+  entity.role = event.params.role;
+  entity.sender = event.params.sender;
   entity.save();
 }
 
 export function handleRoleRevoked(event: RoleRevoked): void {
-  const contract = getOrCreateTransmuterBuffer(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterBufferRoleRevokedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterBufferEvent<TransmuterBufferRoleRevokedEvent>(event);
+  entity.account = event.params.account;
+  entity.role = event.params.role;
+  entity.sender = event.params.sender;
   entity.save();
 }
 
 export function handleSetAlchemist(event: SetAlchemist): void {
-  const contract = getOrCreateTransmuterBuffer(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterBufferSetAlchemistEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterBufferEvent<TransmuterBufferSetAlchemistEvent>(event);
+  entity.alchemist = event.params.alchemist;
   entity.save();
 }
 
 export function handleSetFlowRate(event: SetFlowRate): void {
-  const contract = getOrCreateTransmuterBuffer(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterBufferSetFlowRateEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterBufferEvent<TransmuterBufferSetFlowRateEvent>(event);
+  entity.flowRate = event.params.flowRate;
+  entity.underlyingToken = event.params.underlyingToken;
   entity.save();
 }
 
 export function handleSetSource(event: SetSource): void {
-  const contract = getOrCreateTransmuterBuffer(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new TransmuterBufferSetSourceEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createTransmuterBufferEvent<TransmuterBufferSetSourceEvent>(event);
+  entity.flag = event.params.flag;
+  entity.source = event.params.source;
   entity.save();
 }

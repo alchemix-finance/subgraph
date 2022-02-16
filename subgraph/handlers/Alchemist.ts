@@ -1,4 +1,4 @@
-import { ethereum } from '@graphprotocol/graph-ts';
+import { Entity, ethereum } from '@graphprotocol/graph-ts';
 import {
   Alchemist,
   AlchemistAccountAddedEvent,
@@ -70,8 +70,7 @@ import {
   Withdraw,
   YieldTokenEnabled,
 } from '../generated/Alchemist/Alchemist';
-import { uniqueEventId } from '../utils/id';
-import { getOrCreateTransaction } from '../utils/transaction';
+import { createEvent } from '../utils/entities';
 
 function getOrCreateAlchemist(event: ethereum.Event): Alchemist {
   let entity = Alchemist.load(event.address.toHex());
@@ -84,299 +83,242 @@ function getOrCreateAlchemist(event: ethereum.Event): Alchemist {
   return entity;
 }
 
-export function handleAccountAdded(event: AccountAdded): void {
+function createAlchemistEvent<TEvent extends Entity>(event: ethereum.Event): TEvent {
   const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistAccountAddedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createEvent<TEvent>(event);
+  entity.setString('contract', contract.id);
+
+  return entity;
+}
+
+export function handleAccountAdded(event: AccountAdded): void {
+  const entity = createAlchemistEvent<AlchemistAccountAddedEvent>(event);
+  entity.account = event.params.account;
   entity.save();
 }
 
 export function handleAccountRemoved(event: AccountRemoved): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistAccountRemovedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistAccountRemovedEvent>(event);
+  entity.account = event.params.account;
   entity.save();
 }
 
 export function handleAddUnderlyingToken(event: AddUnderlyingToken): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistAddUnderlyingTokenEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistAddUnderlyingTokenEvent>(event);
+  entity.underlyingToken = event.params.underlyingToken;
   entity.save();
 }
 
 export function handleAddYieldToken(event: AddYieldToken): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistAddYieldTokenEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistAddYieldTokenEvent>(event);
+  entity.yieldToken = event.params.yieldToken;
   entity.save();
 }
 
 export function handleAdminUpdated(event: AdminUpdated): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistAdminUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistAdminUpdatedEvent>(event);
+  entity.admin = event.params.admin;
   entity.save();
 }
 
 export function handleApproveMint(event: ApproveMint): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistApproveMintEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistApproveMintEvent>(event);
+  entity.amount = event.params.amount;
+  entity.owner = event.params.owner;
+  entity.spender = event.params.spender;
   entity.save();
 }
 
 export function handleApproveWithdraw(event: ApproveWithdraw): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistApproveWithdrawEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistApproveWithdrawEvent>(event);
+  entity.amount = event.params.amount;
+  entity.owner = event.params.owner;
+  entity.spender = event.params.spender;
+  entity.yieldToken = event.params.yieldToken;
   entity.save();
 }
 
 export function handleBurn(event: Burn): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistBurnEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistBurnEvent>(event);
+  entity.amount = event.params.amount;
+  entity.recipient = event.params.recipient;
+  entity.sender = event.params.sender;
   entity.save();
 }
 
 export function handleDeposit(event: Deposit): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistDepositEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistDepositEvent>(event);
+  entity.amount = event.params.amount;
+  entity.recipient = event.params.recipient;
+  entity.sender = event.params.sender;
+  entity.yieldToken = event.params.yieldToken;
   entity.save();
 }
 
 export function handleDonate(event: Donate): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistDonateEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistDonateEvent>(event);
+  entity.amount = event.params.amount;
+  entity.sender = event.params.sender;
+  entity.yieldToken = event.params.yieldToken;
   entity.save();
 }
 
 export function handleHarvest(event: Harvest): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistHarvestEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistHarvestEvent>(event);
+  entity.params = event.params.params;
+  entity.yieldToken = event.params.yieldToken;
   entity.save();
 }
 
 export function handleKeeperSet(event: KeeperSet): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistKeeperSetEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistKeeperSetEvent>(event);
+  entity.flag = event.params.flag;
+  entity.sentinel = event.params.sentinel;
   entity.save();
 }
 
 export function handleLiquidate(event: Liquidate): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistLiquidateEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistLiquidateEvent>(event);
+  entity.owner = event.params.owner;
+  entity.shares = event.params.shares;
+  entity.yieldToken = event.params.yieldToken;
   entity.save();
 }
 
 export function handleLiquidationLimitUpdated(event: LiquidationLimitUpdated): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistLiquidationLimitUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistLiquidationLimitUpdatedEvent>(event);
+  entity.blocks = event.params.blocks;
+  entity.maximum = event.params.maximum;
+  entity.underlyingToken = event.params.underlyingToken;
   entity.save();
 }
 
 export function handleMaximumExpectedValueUpdated(event: MaximumExpectedValueUpdated): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistMaximumExpectedValueUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistMaximumExpectedValueUpdatedEvent>(event);
+  entity.maximumExpectedValue = event.params.maximumExpectedValue;
+  entity.yieldToken = event.params.yieldToken;
   entity.save();
 }
 
 export function handleMaximumLossUpdated(event: MaximumLossUpdated): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistMaximumLossUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistMaximumLossUpdatedEvent>(event);
+  entity.maximumLoss = event.params.maximumLoss;
+  entity.yieldToken = event.params.yieldToken;
   entity.save();
 }
 
 export function handleMinimumCollateralizationUpdated(event: MinimumCollateralizationUpdated): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistMinimumCollateralizationUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistMinimumCollateralizationUpdatedEvent>(event);
+  entity.minimumCollateralization = event.params.minimumCollateralization;
   entity.save();
 }
 
 export function handleMint(event: Mint): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistMintEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistMintEvent>(event);
+  entity.amount = event.params.amount;
+  entity.owner = event.params.owner;
+  entity.recipient = event.params.recipient;
   entity.save();
 }
 
 export function handleMintingLimitUpdated(event: MintingLimitUpdated): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistMintingLimitUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistMintingLimitUpdatedEvent>(event);
+  entity.blocks = event.params.blocks;
+  entity.maximum = event.params.maximum;
   entity.save();
 }
 
 export function handlePendingAdminUpdated(event: PendingAdminUpdated): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistPendingAdminUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistPendingAdminUpdatedEvent>(event);
+  entity.pendingAdmin = event.params.pendingAdmin;
   entity.save();
 }
 
 export function handleProtocolFeeReceiverUpdated(event: ProtocolFeeReceiverUpdated): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistProtocolFeeReceiverUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistProtocolFeeReceiverUpdatedEvent>(event);
+  entity.protocolFeeReceiver = event.params.protocolFeeReceiver;
   entity.save();
 }
 
 export function handleProtocolFeeUpdated(event: ProtocolFeeUpdated): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistProtocolFeeUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistProtocolFeeUpdatedEvent>(event);
+  entity.protocolFee = event.params.protocolFee;
   entity.save();
 }
 
 export function handleRepay(event: Repay): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistRepayEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistRepayEvent>(event);
+  entity.amount = event.params.amount;
+  entity.recipient = event.params.recipient;
+  entity.sender = event.params.sender;
+  entity.underlyingToken = event.params.underlyingToken;
   entity.save();
 }
 
 export function handleRepayLimitUpdated(event: RepayLimitUpdated): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistRepayLimitUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistRepayLimitUpdatedEvent>(event);
+  entity.blocks = event.params.blocks;
+  entity.maximum = event.params.maximum;
+  entity.underlyingToken = event.params.underlyingToken;
   entity.save();
 }
 
 export function handleSentinelSet(event: SentinelSet): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistSentinelSetEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistSentinelSetEvent>(event);
+  entity.flag = event.params.flag;
+  entity.sentinel = event.params.sentinel;
   entity.save();
 }
 
 export function handleSnap(event: Snap): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistSnapEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistSnapEvent>(event);
+  entity.expectedValue = event.params.expectedValue;
+  entity.yieldToken = event.params.yieldToken;
   entity.save();
 }
 
 export function handleTokenAdapterUpdated(event: TokenAdapterUpdated): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistTokenAdapterUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistTokenAdapterUpdatedEvent>(event);
+  entity.tokenAdapter = event.params.tokenAdapter;
+  entity.yieldToken = event.params.yieldToken;
   entity.save();
 }
 
 export function handleTransmuterUpdated(event: TransmuterUpdated): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistTransmuterUpdatedEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistTransmuterUpdatedEvent>(event);
+  entity.transmuter = event.params.transmuter;
   entity.save();
 }
 
 export function handleUnderlyingTokenEnabled(event: UnderlyingTokenEnabled): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistUnderlyingTokenEnabledEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistUnderlyingTokenEnabledEvent>(event);
+  entity.enabled = event.params.enabled;
+  entity.underlyingToken = event.params.underlyingToken;
   entity.save();
 }
 
 export function handleWhitelistDisabled(event: WhitelistDisabled): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistWhitelistDisabledEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistWhitelistDisabledEvent>(event);
   entity.save();
 }
 
 export function handleWhitelistEnabled(event: WhitelistEnabled): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistWhitelistEnabledEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistWhitelistEnabledEvent>(event);
   entity.save();
 }
 
 export function handleWithdraw(event: Withdraw): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistWithdrawEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistWithdrawEvent>(event);
+  entity.owner = event.params.owner;
+  entity.recipient = event.params.recipient;
+  entity.shares = event.params.shares;
+  entity.yieldToken = event.params.yieldToken;
   entity.save();
 }
 
 export function handleYieldTokenEnabled(event: YieldTokenEnabled): void {
-  const contract = getOrCreateAlchemist(event);
-  const transaction = getOrCreateTransaction(event);
-  const entity = new AlchemistYieldTokenEnabledEvent(uniqueEventId(event));
-  entity.contract = contract.id;
-  entity.transaction = transaction.id;
+  const entity = createAlchemistEvent<AlchemistYieldTokenEnabledEvent>(event);
+  entity.enabled = event.params.enabled;
+  entity.yieldToken = event.params.yieldToken;
   entity.save();
 }

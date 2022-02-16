@@ -2,14 +2,31 @@
 # GENERIC
 ###############################################################################
 
+type Block @entity {
+  id: ID!
+  number: BigInt!
+  hash: Bytes!
+  timestamp: BigInt!
+  events: [Event!]! @derivedFrom(field: "block")
+  transactions: [Transaction!]! @derivedFrom(field: "block")
+}
+
 type Transaction @entity {
   id: ID!
-  block: BigInt!
+  hash: Bytes!
+  input: Bytes!
+  to: Bytes
+  block: Block!
+  timestamp: BigInt!
   events: [Event!]! @derivedFrom(field: "transaction")
 }
 
 interface Event {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
 }
@@ -28,208 +45,401 @@ type Alchemist implements Contract @entity {
   events: [Event!]! @derivedFrom(field: "contract")
 }
 
-interface AlchemistEvent {
+type AlchemistAccountAddedEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  account: Bytes!
+}
+
+type AlchemistAccountRemovedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  account: Bytes!
+}
+
+type AlchemistAddUnderlyingTokenEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  underlyingToken: Bytes!
+}
+
+type AlchemistAddYieldTokenEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  yieldToken: Bytes!
+}
+
+type AlchemistAdminUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  admin: Bytes!
+}
+
+type AlchemistApproveMintEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  owner: Bytes!
+  spender: Bytes!
+}
+
+type AlchemistApproveWithdrawEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  owner: Bytes!
+  spender: Bytes!
+  yieldToken: Bytes!
+}
+
+type AlchemistBurnEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  recipient: Bytes!
+  sender: Bytes!
+}
+
+type AlchemistDepositEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  recipient: Bytes!
+  sender: Bytes!
+  yieldToken: Bytes!
+}
+
+type AlchemistDonateEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  sender: Bytes!
+  yieldToken: Bytes!
+}
+
+type AlchemistHarvestEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  params: Bytes!
+  yieldToken: Bytes!
+}
+
+type AlchemistKeeperSetEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  flag: Boolean!
+  sentinel: Bytes!
+}
+
+type AlchemistLiquidateEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  owner: Bytes!
+  shares: BigInt!
+  yieldToken: Bytes!
+}
+
+type AlchemistLiquidationLimitUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  blocks: BigInt!
+  maximum: BigInt!
+  underlyingToken: Bytes!
+}
+
+type AlchemistMaximumExpectedValueUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  maximumExpectedValue: BigInt!
+  yieldToken: Bytes!
+}
+
+type AlchemistMaximumLossUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  maximumLoss: BigInt!
+  yieldToken: Bytes!
+}
+
+type AlchemistMinimumCollateralizationUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  minimumCollateralization: BigInt!
+}
+
+type AlchemistMintEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  owner: Bytes!
+  recipient: Bytes!
+}
+
+type AlchemistMintingLimitUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  blocks: BigInt!
+  maximum: BigInt!
+}
+
+type AlchemistPendingAdminUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  pendingAdmin: Bytes!
+}
+
+type AlchemistProtocolFeeReceiverUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  protocolFeeReceiver: Bytes!
+}
+
+type AlchemistProtocolFeeUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  protocolFee: BigInt!
+}
+
+type AlchemistRepayEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  recipient: Bytes!
+  sender: Bytes!
+  underlyingToken: Bytes!
+}
+
+type AlchemistRepayLimitUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  blocks: BigInt!
+  maximum: BigInt!
+  underlyingToken: Bytes!
+}
+
+type AlchemistSentinelSetEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  flag: Boolean!
+  sentinel: Bytes!
+}
+
+type AlchemistSnapEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  expectedValue: BigInt!
+  yieldToken: Bytes!
+}
+
+type AlchemistTokenAdapterUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  tokenAdapter: Bytes!
+  yieldToken: Bytes!
+}
+
+type AlchemistTransmuterUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  transmuter: Bytes!
+}
+
+type AlchemistUnderlyingTokenEnabledEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  enabled: Boolean!
+  underlyingToken: Bytes!
+}
+
+type AlchemistWhitelistDisabledEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
 }
 
-type AlchemistAccountAddedEvent implements Event & AlchemistEvent @entity {
+type AlchemistWhitelistEnabledEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
 }
 
-type AlchemistAccountRemovedEvent implements Event & AlchemistEvent @entity {
+type AlchemistWithdrawEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
+  owner: Bytes!
+  recipient: Bytes!
+  shares: BigInt!
+  yieldToken: Bytes!
 }
 
-type AlchemistAddUnderlyingTokenEvent implements Event & AlchemistEvent @entity {
+type AlchemistYieldTokenEnabledEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
-}
-
-type AlchemistAddYieldTokenEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistAdminUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistApproveMintEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistApproveWithdrawEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistBurnEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistDepositEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistDonateEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistHarvestEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistKeeperSetEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistLiquidateEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistLiquidationLimitUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistMaximumExpectedValueUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistMaximumLossUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistMinimumCollateralizationUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistMintEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistMintingLimitUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistPendingAdminUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistProtocolFeeReceiverUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistProtocolFeeUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistRepayEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistRepayLimitUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistSentinelSetEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistSnapEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistTokenAdapterUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistTransmuterUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistUnderlyingTokenEnabledEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistWhitelistDisabledEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistWhitelistEnabledEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistWithdrawEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistYieldTokenEnabledEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
+  enabled: Boolean!
+  yieldToken: Bytes!
 }
 
 ###############################################################################
@@ -241,94 +451,170 @@ type Transmuter implements Contract @entity {
   events: [Event!]! @derivedFrom(field: "contract")
 }
 
-interface TransmuterEvent {
+type TransmuterAccountAddedEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  account: Bytes!
+}
+
+type TransmuterAccountRemovedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  account: Bytes!
+}
+
+type TransmuterAdminUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  admin: Bytes!
+}
+
+type TransmuterClaimEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  recipient: Bytes!
+  sender: Bytes!
+  yTokens: [Bytes!]!
+}
+
+type TransmuterDepositEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  owner: Bytes!
+  sender: Bytes!
+}
+
+type TransmuterExchangeEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  sender: Bytes!
+}
+
+type TransmuterPauseUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  isPaused: Boolean!
+}
+
+type TransmuterPendingAdminUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  pendingAdmin: Bytes!
+}
+
+type TransmuterRoleAdminChangedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  newAdminRole: Bytes!
+  previousAdminRole: Bytes!
+  role: Bytes!
+}
+
+type TransmuterRoleGrantedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  account: Bytes!
+  role: Bytes!
+  sender: Bytes!
+}
+
+type TransmuterRoleRevokedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  account: Bytes!
+  role: Bytes!
+  sender: Bytes!
+}
+
+type TransmuterWhitelistDisabledEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
 }
 
-type TransmuterAccountAddedEvent implements Event & AlchemistEvent @entity {
+type TransmuterWhitelistEnabledEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
 }
 
-type TransmuterAccountRemovedEvent implements Event & AlchemistEvent @entity {
+type TransmuterWithdrawEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
-}
-
-type TransmuterAdminUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type TransmuterClaimEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type TransmuterDepositEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type TransmuterExchangeEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type TransmuterPauseUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type TransmuterPendingAdminUpdatedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type TransmuterRoleAdminChangedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type TransmuterRoleGrantedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type TransmuterRoleRevokedEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type TransmuterWhitelistDisabledEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type TransmuterWhitelistEnabledEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type TransmuterWithdrawEvent implements Event & AlchemistEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
+  amount: BigInt!
+  recipient: Bytes!
+  sender: Bytes!
 }
 
 ###############################################################################
@@ -340,56 +626,98 @@ type TransmuterBuffer implements Contract @entity {
   events: [Event!]! @derivedFrom(field: "contract")
 }
 
-interface TransmuterBufferEvent {
+type TransmuterBufferRefreshStrategiesEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
 }
 
-type TransmuterBufferRefreshStrategiesEvent implements Event & TransmuterBufferEvent @entity {
+type TransmuterBufferRegisterAssetEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
+  transmuter: Bytes!
+  underlyingToken: Bytes!
 }
 
-type TransmuterBufferRegisterAssetEvent implements Event & TransmuterBufferEvent @entity {
+type TransmuterBufferRoleAdminChangedEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
+  newAdminRole: Bytes!
+  previousAdminRole: Bytes!
+  role: Bytes!
 }
 
-type TransmuterBufferRoleAdminChangedEvent implements Event & TransmuterBufferEvent @entity {
+type TransmuterBufferRoleGrantedEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
+  account: Bytes!
+  role: Bytes!
+  sender: Bytes!
 }
 
-type TransmuterBufferRoleGrantedEvent implements Event & TransmuterBufferEvent @entity {
+type TransmuterBufferRoleRevokedEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
+  account: Bytes!
+  role: Bytes!
+  sender: Bytes!
 }
 
-type TransmuterBufferRoleRevokedEvent implements Event & TransmuterBufferEvent @entity {
+type TransmuterBufferSetAlchemistEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
+  alchemist: Bytes!
 }
 
-type TransmuterBufferSetAlchemistEvent implements Event & TransmuterBufferEvent @entity {
+type TransmuterBufferSetFlowRateEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
+  flowRate: BigInt!
+  underlyingToken: Bytes!
 }
 
-type TransmuterBufferSetFlowRateEvent implements Event & TransmuterBufferEvent @entity {
+type TransmuterBufferSetSourceEvent implements Event @entity {
   id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
-}
-
-type TransmuterBufferSetSourceEvent implements Event & TransmuterBufferEvent @entity {
-  id: ID!
-  contract: Contract!
-  transaction: Transaction!
+  flag: Boolean!
+  source: Bytes!
 }

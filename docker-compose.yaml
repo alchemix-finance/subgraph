@@ -18,7 +18,7 @@ services:
       postgres_db: graph-node
       ipfs: ipfs:5001
       ethereum: ${ETHEREUM_NETWORK:-testnet}:${JSONRPC_ENDPOINT:-https://3.138.194.94:443}
-      RUST_LOG: info
+      # RUST_LOG: info
       ETHEREUM_REORG_THRESHOLD: 1
       ETHEREUM_ANCESTOR_COUNT: 1
 
