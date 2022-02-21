@@ -1,11 +1,16 @@
 import { utils } from 'ethers';
-import { eventDeclaration } from './utils/abis';
+import { eventDeclaration, deploymentAddress } from './utils/abis';
+import { startBlockNumber } from './utils/constants';
 import { DataSource } from './utils/types';
 
 const AlchemistInterface = new utils.Interface(require('../abis/Alchemist.json'));
 const AlchemistEvents = Object.values(AlchemistInterface.events);
 
-export function createAlchemist(name: string, address: string, block: number): DataSource {
+export function createAlchemist(
+  name: string,
+  block: number = startBlockNumber,
+  address: string = deploymentAddress(name),
+): DataSource {
   return {
     name,
     network: 'testnet',

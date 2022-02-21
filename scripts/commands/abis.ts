@@ -5,7 +5,6 @@ import { utils } from 'ethers';
 import { JsonFragment } from '@ethersproject/abi';
 import { packageRoot } from '../constants';
 
-// TODO: Extract the start block number from the receipt
 export interface ProcessedArtifact {
   absolutePath: string;
   relativePath: string;

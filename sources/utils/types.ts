@@ -23,3 +23,11 @@ export interface DataSource {
     file: string;
   };
 }
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      START_BLOCK_NUMBER: string;
+    }
+  }
+}

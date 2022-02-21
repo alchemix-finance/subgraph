@@ -1,11 +1,16 @@
 import { utils } from 'ethers';
-import { eventDeclaration } from './utils/abis';
+import { eventDeclaration, deploymentAddress } from './utils/abis';
+import { startBlockNumber } from './utils/constants';
 import { DataSource } from './utils/types';
 
 const TransmuterBufferInterface = new utils.Interface(require('../abis/TransmuterBuffer.json'));
 const TransmuterBufferEvents = Object.values(TransmuterBufferInterface.events);
 
-export function createTransmuterBuffer(name: string, address: string, block: number): DataSource {
+export function createTransmuterBuffer(
+  name: string,
+  block: number = startBlockNumber,
+  address: string = deploymentAddress(name),
+): DataSource {
   return {
     name,
     network: 'testnet',
