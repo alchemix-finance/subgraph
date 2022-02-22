@@ -173,14 +173,7 @@ export function handleDeposit(event: Deposit): void {
   deposit.shares = shares;
   deposit.save();
 
-  getOrCreateAlchemistDepositHistory(
-    deposit,
-    change,
-    entity.id,
-    event.block.timestamp,
-    entity.block,
-    entity.transaction,
-  );
+  getOrCreateAlchemistDepositHistory(deposit, change, event);
 }
 
 export function handleDonate(event: Donate): void {
@@ -218,14 +211,8 @@ export function handleLiquidate(event: Liquidate): void {
   deposit.shares = deposit.shares.minus(event.params.shares);
   deposit.save();
 
-  getOrCreateAlchemistDepositHistory(
-    deposit,
-    event.params.shares.times(BigInt.fromI32(-1)),
-    entity.id,
-    event.block.timestamp,
-    entity.block,
-    entity.transaction,
-  );
+  const change = event.params.shares.times(BigInt.fromI32(-1));
+  getOrCreateAlchemistDepositHistory(deposit, change, event);
 }
 
 export function handleLiquidationLimitUpdated(event: LiquidationLimitUpdated): void {
@@ -364,14 +351,8 @@ export function handleWithdraw(event: Withdraw): void {
   deposit.shares = deposit.shares.minus(event.params.shares);
   deposit.save();
 
-  getOrCreateAlchemistDepositHistory(
-    deposit,
-    event.params.shares.times(BigInt.fromI32(-1)),
-    entity.id,
-    event.block.timestamp,
-    entity.block,
-    entity.transaction,
-  );
+  const change = event.params.shares.times(BigInt.fromI32(-1));
+  getOrCreateAlchemistDepositHistory(deposit, change, event);
 }
 
 export function handleYieldTokenEnabled(event: YieldTokenEnabled): void {

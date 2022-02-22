@@ -78,12 +78,10 @@ export function getOrCreateAlchemistDeposit(account: Account, alchemist: Alchemi
 export function getOrCreateAlchemistDepositHistory(
   state: AlchemistDeposit,
   change: BigInt,
-  event: string,
-  timestamp: BigInt,
-  block: string,
-  transaction: string,
+  event: ethereum.Event,
 ): AlchemistDepositHistory {
-  const id = state.id + '/' + event;
+  const eventId = uniqueEventId(event);
+  const id = state.id + '/' + eventId;
   let entity = AlchemistDepositHistory.load(id);
 
   if (!entity) {
@@ -93,10 +91,10 @@ export function getOrCreateAlchemistDepositHistory(
     entity.account = state.account;
     entity.alchemist = state.alchemist;
     entity.shares = state.shares;
-    entity.event = event;
-    entity.block = block;
-    entity.transaction = transaction;
-    entity.timestamp = timestamp;
+    entity.event = eventId;
+    entity.block = event.block.number.toString();
+    entity.transaction = event.transaction.hash.toHex();
+    entity.timestamp = event.block.timestamp;
     entity.save();
   }
 
