@@ -31,7 +31,7 @@ import {
   WhitelistDisabled,
   WhitelistEnabled,
   Withdraw,
-} from '../generated/Transmuter/Transmuter';
+} from '../generated/TransmuterV2_ETH/Transmuter';
 import { createEvent } from '../utils/entities';
 
 function getOrCreateTransmuter(event: ethereum.Event): Transmuter {

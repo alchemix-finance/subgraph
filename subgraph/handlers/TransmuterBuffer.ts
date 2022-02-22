@@ -19,7 +19,7 @@ import {
   SetAlchemist,
   SetFlowRate,
   SetSource,
-} from '../generated/TransmuterBuffer/TransmuterBuffer';
+} from '../generated/TransmuterBuffer_alETH/TransmuterBuffer';
 import { createEvent } from '../utils/entities';
 
 function getOrCreateTransmuterBuffer(event: ethereum.Event): TransmuterBuffer {

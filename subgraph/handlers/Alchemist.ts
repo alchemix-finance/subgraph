@@ -69,7 +69,7 @@ import {
   WhitelistEnabled,
   Withdraw,
   YieldTokenEnabled,
-} from '../generated/Alchemist/Alchemist';
+} from '../generated/AlchemistV2_alETH/Alchemist';
 import { createEvent } from '../utils/entities';
 
 function getOrCreateAlchemist(event: ethereum.Event): Alchemist {
