@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 import { eventDeclaration, deploymentAddress } from './utils/abis';
-import { startBlockNumber } from './utils/constants';
+import { networkName, startBlockNumber } from './utils/constants';
 import { DataSource } from './utils/types';
 
 const TransmuterBufferInterface = new utils.Interface(require('../abis/TransmuterBuffer.json'));
@@ -13,7 +13,7 @@ export function createTransmuterBuffer(
 ): DataSource {
   return {
     name,
-    network: 'testnet',
+    network: networkName,
     kind: 'ethereum/contract',
     mapping: {
       apiVersion: '0.0.6',
