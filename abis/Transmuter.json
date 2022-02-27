@@ -1,16 +1,5 @@
 [
-  {
-    "anonymous": false,
-    "inputs": [{ "indexed": false, "internalType": "address", "name": "account", "type": "address" }],
-    "name": "AccountAdded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [{ "indexed": false, "internalType": "address", "name": "account", "type": "address" }],
-    "name": "AccountRemoved",
-    "type": "event"
-  },
+  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
   {
     "anonymous": false,
     "inputs": [{ "indexed": false, "internalType": "address", "name": "admin", "type": "address" }],
@@ -22,8 +11,7 @@
     "inputs": [
       { "indexed": true, "internalType": "address", "name": "sender", "type": "address" },
       { "indexed": true, "internalType": "address", "name": "recipient", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
-      { "indexed": false, "internalType": "address[]", "name": "yTokens", "type": "address[]" }
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "Claim",
     "type": "event"
@@ -49,8 +37,8 @@
   },
   {
     "anonymous": false,
-    "inputs": [{ "indexed": false, "internalType": "bool", "name": "isPaused", "type": "bool" }],
-    "name": "PauseUpdated",
+    "inputs": [{ "indexed": false, "internalType": "bool", "name": "flag", "type": "bool" }],
+    "name": "Paused",
     "type": "event"
   },
   {
@@ -89,8 +77,6 @@
     "name": "RoleRevoked",
     "type": "event"
   },
-  { "anonymous": false, "inputs": [], "name": "WhitelistDisabled", "type": "event" },
-  { "anonymous": false, "inputs": [], "name": "WhitelistEnabled", "type": "event" },
   {
     "anonymous": false,
     "inputs": [
@@ -130,13 +116,6 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
-    "name": "addToWhitelist",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "buffer",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
@@ -146,9 +125,7 @@
   {
     "inputs": [
       { "internalType": "uint256", "name": "amount", "type": "uint256" },
-      { "internalType": "address", "name": "recipient", "type": "address" },
-      { "internalType": "address[]", "name": "yTokens", "type": "address[]" },
-      { "internalType": "bytes[]", "name": "yTokenParams", "type": "bytes[]" }
+      { "internalType": "address", "name": "recipient", "type": "address" }
     ],
     "name": "claim",
     "outputs": [],
@@ -165,7 +142,6 @@
     "stateMutability": "nonpayable",
     "type": "function"
   },
-  { "inputs": [], "name": "disableWhitelist", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
     "inputs": [{ "internalType": "uint256", "name": "amount", "type": "uint256" }],
     "name": "exchange",
@@ -218,7 +194,8 @@
     "inputs": [
       { "internalType": "address", "name": "_syntheticToken", "type": "address" },
       { "internalType": "address", "name": "_underlyingToken", "type": "address" },
-      { "internalType": "address", "name": "_buffer", "type": "address" }
+      { "internalType": "address", "name": "_buffer", "type": "address" },
+      { "internalType": "address", "name": "_whitelist", "type": "address" }
     ],
     "name": "initialize",
     "outputs": [],
@@ -230,13 +207,6 @@
     "name": "isPaused",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
-    "name": "removeFromWhitelist",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -310,15 +280,8 @@
   },
   {
     "inputs": [],
-    "name": "whitelistActive",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "name": "whitelisted",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "name": "whitelist",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },

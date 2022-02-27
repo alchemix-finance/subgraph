@@ -1,5 +1,7 @@
 {
   "extends": "@tsconfig/node16/tsconfig.json",
+  "include": ["scripts", "sources"],
+  "files": ["subgraph.ts"],
   "compilerOptions": {
     "lib": ["esnext"],
     "resolveJsonModule": true

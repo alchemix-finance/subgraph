@@ -1,3 +1,3 @@
 require('ts-node/register');
 
-module.exports = require('./subgraph.ts').default;
+module.exports = require('./manifest.ts').default;

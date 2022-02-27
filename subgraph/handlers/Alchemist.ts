@@ -1,8 +1,6 @@
 import { BigInt, Entity, ethereum } from '@graphprotocol/graph-ts';
 import {
   Alchemist,
-  AlchemistAccountAddedEvent,
-  AlchemistAccountRemovedEvent,
   AlchemistAddUnderlyingTokenEvent,
   AlchemistAddYieldTokenEvent,
   AlchemistAdminUpdatedEvent,
@@ -30,15 +28,11 @@ import {
   AlchemistTokenAdapterUpdatedEvent,
   AlchemistTransmuterUpdatedEvent,
   AlchemistUnderlyingTokenEnabledEvent,
-  AlchemistWhitelistDisabledEvent,
-  AlchemistWhitelistEnabledEvent,
   AlchemistWithdrawEvent,
   AlchemistYieldTokenEnabledEvent,
 } from '../generated/schema';
 import {
   Alchemist as AlchemistContract,
-  AccountAdded,
-  AccountRemoved,
   AddUnderlyingToken,
   AddYieldToken,
   AdminUpdated,
@@ -66,8 +60,6 @@ import {
   TokenAdapterUpdated,
   TransmuterUpdated,
   UnderlyingTokenEnabled,
-  WhitelistDisabled,
-  WhitelistEnabled,
   Withdraw,
   YieldTokenEnabled,
 } from '../generated/AlchemistV2_alETH/Alchemist';
@@ -95,18 +87,6 @@ function createAlchemistEvent<TEvent extends Entity>(event: ethereum.Event): TEv
   entity.setString('contract', contract.id);
 
   return entity;
-}
-
-export function handleAccountAdded(event: AccountAdded): void {
-  const entity = createAlchemistEvent<AlchemistAccountAddedEvent>(event);
-  entity.account = event.params.account;
-  entity.save();
-}
-
-export function handleAccountRemoved(event: AccountRemoved): void {
-  const entity = createAlchemistEvent<AlchemistAccountRemovedEvent>(event);
-  entity.account = event.params.account;
-  entity.save();
 }
 
 export function handleAddUnderlyingToken(event: AddUnderlyingToken): void {
@@ -186,7 +166,8 @@ export function handleDonate(event: Donate): void {
 
 export function handleHarvest(event: Harvest): void {
   const entity = createAlchemistEvent<AlchemistHarvestEvent>(event);
-  entity.params = event.params.params;
+  entity.maximumLoss = event.params.maximumLoss;
+  entity.totalHarvested = event.params.totalHarvested;
   entity.yieldToken = event.params.yieldToken;
   entity.save();
 }
@@ -324,16 +305,6 @@ export function handleUnderlyingTokenEnabled(event: UnderlyingTokenEnabled): voi
   const entity = createAlchemistEvent<AlchemistUnderlyingTokenEnabledEvent>(event);
   entity.enabled = event.params.enabled;
   entity.underlyingToken = event.params.underlyingToken;
-  entity.save();
-}
-
-export function handleWhitelistDisabled(event: WhitelistDisabled): void {
-  const entity = createAlchemistEvent<AlchemistWhitelistDisabledEvent>(event);
-  entity.save();
-}
-
-export function handleWhitelistEnabled(event: WhitelistEnabled): void {
-  const entity = createAlchemistEvent<AlchemistWhitelistEnabledEvent>(event);
   entity.save();
 }
 

@@ -4,12 +4,16 @@
   "scripts": {
     "prepare": "is-ci || husky install",
     "format": "yarn lint --write",
+    "script": "ts-node scripts",
+    "print": "yarn script print",
+    "abigen": "yarn script copy-abis",
+    "postabigen": "prettier --list-different --write abis",
+    "precodegen": "rimraf subgraph/generated",
     "codegen": "graph codegen subgraph.js --output-dir subgraph/generated --skip-migrations",
     "build": "graph build subgraph.js --skip-migrations",
     "predeploy": "graph create alchemix/alchemix --node http://127.0.0.1:8020 || true",
     "deploy": "graph deploy alchemix/alchemix subgraph.js --ipfs http://localhost:5001 --node http://127.0.0.1:8020/ --skip-migrations --version-label local",
-    "lint": "prettier --ignore-path .gitignore --list-different \"**/*.{ts,js,json,yaml}\"",
-    "script": "ts-node scripts"
+    "lint": "prettier --ignore-path .gitignore --list-different \"**/*.{ts,js,json,yaml}\""
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.26.0",
@@ -29,6 +33,7 @@
     "js-yaml": "^4.1.0",
     "lint-staged": "^12.2.2",
     "prettier": "^2.3.2",
+    "rimraf": "^3.0.2",
     "ts-node": "^10.4.0",
     "typescript": "^4.5.5",
     "yargs": "^17.3.1"

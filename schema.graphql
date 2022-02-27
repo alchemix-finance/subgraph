@@ -47,28 +47,6 @@ type Alchemist implements Contract @entity {
   activity: [AlchemistDepositHistory!]! @derivedFrom(field: "alchemist")
 }
 
-type AlchemistAccountAddedEvent implements Event @entity {
-  id: ID!
-  cursor: BigInt!
-  index: BigInt!
-  block: Block!
-  timestamp: BigInt!
-  contract: Contract!
-  transaction: Transaction!
-  account: Bytes!
-}
-
-type AlchemistAccountRemovedEvent implements Event @entity {
-  id: ID!
-  cursor: BigInt!
-  index: BigInt!
-  block: Block!
-  timestamp: BigInt!
-  contract: Contract!
-  transaction: Transaction!
-  account: Bytes!
-}
-
 type AlchemistAddUnderlyingTokenEvent implements Event @entity {
   id: ID!
   cursor: BigInt!
@@ -179,6 +157,8 @@ type AlchemistHarvestEvent implements Event @entity {
   transaction: Transaction!
   params: Bytes!
   yieldToken: Bytes!
+  maximumLoss: BigInt!
+  totalHarvested: BigInt!
 }
 
 type AlchemistKeeperSetEvent implements Event @entity {
@@ -398,26 +378,6 @@ type AlchemistUnderlyingTokenEnabledEvent implements Event @entity {
   underlyingToken: Bytes!
 }
 
-type AlchemistWhitelistDisabledEvent implements Event @entity {
-  id: ID!
-  cursor: BigInt!
-  index: BigInt!
-  block: Block!
-  timestamp: BigInt!
-  contract: Contract!
-  transaction: Transaction!
-}
-
-type AlchemistWhitelistEnabledEvent implements Event @entity {
-  id: ID!
-  cursor: BigInt!
-  index: BigInt!
-  block: Block!
-  timestamp: BigInt!
-  contract: Contract!
-  transaction: Transaction!
-}
-
 type AlchemistWithdrawEvent implements Event @entity {
   id: ID!
   cursor: BigInt!
@@ -497,7 +457,6 @@ type TransmuterClaimEvent implements Event @entity {
   amount: BigInt!
   recipient: Bytes!
   sender: Bytes!
-  yTokens: [Bytes!]!
 }
 
 type TransmuterDepositEvent implements Event @entity {
@@ -523,17 +482,6 @@ type TransmuterExchangeEvent implements Event @entity {
   transaction: Transaction!
   amount: BigInt!
   sender: Bytes!
-}
-
-type TransmuterPauseUpdatedEvent implements Event @entity {
-  id: ID!
-  cursor: BigInt!
-  index: BigInt!
-  block: Block!
-  timestamp: BigInt!
-  contract: Contract!
-  transaction: Transaction!
-  isPaused: Boolean!
 }
 
 type TransmuterPendingAdminUpdatedEvent implements Event @entity {
