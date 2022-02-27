@@ -5,6 +5,8 @@ export const command = 'check-handlers';
 export const description = 'Verify that every event has a matching handler';
 
 export async function handler() {
+  let output: string[] = [];
+
   for (const source of subgraphDefinition.dataSources) {
     const sourceFile = source.mapping.file;
     const sourceFileContent = await fs.readFile(sourceFile, 'utf8');
@@ -28,23 +30,26 @@ export async function handler() {
     );
 
     if (!unusedHandlers.length && !missingHandlers.length) {
-      console.log('There are no missing or unused event handlers. All good!');
-      return;
+      continue;
     }
 
-    console.log('========================================');
-    console.log(`DATA SOURCE ${source.name}:\n`);
+    output.push('========================================');
+    output.push(`DATA SOURCE ${source.name}:\n`);
 
     if (unusedHandlers.length) {
-      console.log(`UNUSED: ${unusedHandlers.join(', ')}`);
+      output.push(`UNUSED: ${unusedHandlers.join(', ')}`);
     }
 
     if (missingHandlers.length) {
-      console.log(`MISSING: ${missingHandlers.join(', ')}`);
+      output.push(`MISSING: ${missingHandlers.join(', ')}`);
     }
 
-    console.log('========================================\n');
+    output.push('========================================\n');
   }
 
-  process.exit(1);
+  if (output.length) {
+    output.forEach((item) => console.log(item));
+
+    process.exit(0);
+  }
 }
