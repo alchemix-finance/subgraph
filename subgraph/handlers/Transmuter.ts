@@ -5,6 +5,7 @@ import {
   TransmuterClaimEvent,
   TransmuterDepositEvent,
   TransmuterExchangeEvent,
+  TransmuterPausedEvent,
   TransmuterPendingAdminUpdatedEvent,
   TransmuterRoleAdminChangedEvent,
   TransmuterRoleGrantedEvent,
@@ -16,6 +17,7 @@ import {
   Claim,
   Deposit,
   Exchange,
+  Paused,
   PendingAdminUpdated,
   RoleAdminChanged,
   RoleGranted,
@@ -69,6 +71,12 @@ export function handleExchange(event: Exchange): void {
   const entity = createTransmuterEvent<TransmuterExchangeEvent>(event);
   entity.amount = event.params.amount;
   entity.sender = event.params.sender;
+  entity.save();
+}
+
+export function handlePaused(event: Paused): void {
+  const entity = createTransmuterEvent<TransmuterPausedEvent>(event);
+  entity.flag = event.params.flag;
   entity.save();
 }
 

@@ -120,6 +120,18 @@ type AlchemistBurnEvent implements Event @entity {
   sender: Bytes!
 }
 
+type AlchemistCreditUnlockRateUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  yieldToken: Bytes!
+  blocks: BigInt!
+}
+
 type AlchemistDepositEvent implements Event @entity {
   id: ID!
   cursor: BigInt!
@@ -482,6 +494,17 @@ type TransmuterExchangeEvent implements Event @entity {
   transaction: Transaction!
   amount: BigInt!
   sender: Bytes!
+}
+
+type TransmuterPausedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  flag: Boolean!
 }
 
 type TransmuterPendingAdminUpdatedEvent implements Event @entity {

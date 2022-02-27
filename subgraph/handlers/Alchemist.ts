@@ -7,6 +7,7 @@ import {
   AlchemistApproveMintEvent,
   AlchemistApproveWithdrawEvent,
   AlchemistBurnEvent,
+  AlchemistCreditUnlockRateUpdatedEvent,
   AlchemistDepositEvent,
   AlchemistDonateEvent,
   AlchemistHarvestEvent,
@@ -62,6 +63,7 @@ import {
   UnderlyingTokenEnabled,
   Withdraw,
   YieldTokenEnabled,
+  CreditUnlockRateUpdated,
 } from '../generated/AlchemistV2_alETH/Alchemist';
 import {
   createEvent,
@@ -129,6 +131,13 @@ export function handleBurn(event: Burn): void {
   entity.amount = event.params.amount;
   entity.recipient = event.params.recipient;
   entity.sender = event.params.sender;
+  entity.save();
+}
+
+export function handleCreditUnlockRateUpdated(event: CreditUnlockRateUpdated): void {
+  const entity = createAlchemistEvent<AlchemistCreditUnlockRateUpdatedEvent>(event);
+  entity.yieldToken = event.params.yieldToken;
+  entity.blocks = event.params.blocks;
   entity.save();
 }
 
