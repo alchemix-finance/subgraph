@@ -702,6 +702,7 @@ type TransmuterBufferSetSourceEvent implements Event @entity {
 type Account @entity {
   id: ID!
   deposits: [AlchemistDeposit!]! @derivedFrom(field: "account")
+  activity: [AlchemistDepositHistory!]! @derivedFrom(field: "account")
 }
 
 type AlchemistDeposit @entity {
