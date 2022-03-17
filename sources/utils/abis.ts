@@ -14,5 +14,5 @@ export function eventDeclaration(input: utils.EventFragment | JsonFragment | str
 }
 
 export function deploymentAddress(artifact: string): string {
-  return require(`../../artifacts/localhost/${artifact}.json`).address;
+  return require(`../../v2-contracts/deployments/mainnet/${artifact}.json`).address;
 }

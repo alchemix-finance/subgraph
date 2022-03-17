@@ -1,5 +1,16 @@
 import { Address, BigInt, Entity, ethereum } from '@graphprotocol/graph-ts';
-import { Account, Alchemist, AlchemistDeposit, AlchemistDepositHistory, Block, Transaction } from '../generated/schema';
+import {
+  Account,
+  Alchemist,
+  AlchemistBalance,
+  AlchemistBalanceHistory,
+  Block,
+  Transaction,
+  YieldToken,
+  TransmuterBalance,
+  Transmuter,
+  TransmuterBalanceHistory,
+} from '../generated/schema';
 import { uniqueEventId, sortableEventCursor } from './id';
 
 export function getOrCreateBlock(event: ethereum.Event): Block {
@@ -60,37 +71,97 @@ export function getOrCreateAccount(address: Address): Account {
   return entity;
 }
 
-export function getOrCreateAlchemistDeposit(account: Account, alchemist: Alchemist): AlchemistDeposit {
-  const id = alchemist.id + '/' + account.id;
-  let entity = AlchemistDeposit.load(id);
+export function getOrCreateAlchemistBalance(
+  account: Account,
+  alchemist: Alchemist,
+  yieldToken: YieldToken,
+): AlchemistBalance {
+  const id = alchemist.id + '/' + account.id + '/' + yieldToken.id;
+  let entity = AlchemistBalance.load(id);
 
   if (!entity) {
-    entity = new AlchemistDeposit(id);
+    entity = new AlchemistBalance(id);
     entity.account = account.id;
     entity.alchemist = alchemist.id;
+    entity.yieldToken = yieldToken.id;
     entity.shares = BigInt.fromI32(0);
+    entity.underlyingValue = BigInt.fromI32(0);
     entity.save();
   }
 
   return entity;
 }
 
-export function getOrCreateAlchemistDepositHistory(
-  state: AlchemistDeposit,
+export function getOrCreateAlchemistBalanceHistory(
+  state: AlchemistBalance,
   change: BigInt,
   event: ethereum.Event,
-): AlchemistDepositHistory {
+): AlchemistBalanceHistory {
   const eventId = uniqueEventId(event);
   const id = state.id + '/' + eventId;
-  let entity = AlchemistDepositHistory.load(id);
+  let entity = AlchemistBalanceHistory.load(id);
 
   if (!entity) {
-    entity = new AlchemistDepositHistory(id);
-    entity.deposit = state.id;
+    entity = new AlchemistBalanceHistory(id);
+    entity.balance = state.id;
     entity.change = change;
     entity.account = state.account;
     entity.alchemist = state.alchemist;
+    entity.yieldToken = state.yieldToken;
     entity.shares = state.shares;
+    entity.underlyingValue = state.underlyingValue;
+    entity.event = eventId;
+    entity.block = event.block.number.toString();
+    entity.transaction = event.transaction.hash.toHex();
+    entity.timestamp = event.block.timestamp;
+    entity.save();
+  }
+
+  return entity;
+}
+
+export function getOrCreateYieldToken(id: Address): YieldToken {
+  let entity = YieldToken.load(id.toHex());
+
+  if (!entity) {
+    entity = new YieldToken(id.toHex());
+    entity.decimals = BigInt.fromI32(18);
+    entity.underlyingToken = '0x0000000000000000000000000000000000000000';
+    entity.save();
+  }
+
+  return entity;
+}
+
+export function getOrCreateTransmuterBalance(transmuter: Transmuter, account: Account): TransmuterBalance {
+  const id = transmuter.id + '/' + account.id;
+  let entity = TransmuterBalance.load(id);
+
+  if (!entity) {
+    entity = new TransmuterBalance(id);
+    entity.transmuter = transmuter.id;
+    entity.balance = BigInt.fromI32(0);
+    entity.save();
+  }
+
+  return entity;
+}
+
+export function getOrCreateTransmuterBalanceHistory(
+  state: TransmuterBalance,
+  change: BigInt,
+  event: ethereum.Event,
+): TransmuterBalanceHistory {
+  const eventId = uniqueEventId(event);
+  const id = state.id + '/' + eventId;
+  let entity = TransmuterBalanceHistory.load(id);
+
+  if (!entity) {
+    entity = new TransmuterBalanceHistory(id);
+    entity.account = state.account;
+    entity.change = change;
+    entity.balance = state.id;
+    entity.value = state.balance;
     entity.event = eventId;
     entity.block = event.block.number.toString();
     entity.transaction = event.transaction.hash.toHex();

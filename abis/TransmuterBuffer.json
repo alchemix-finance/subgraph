@@ -65,6 +65,15 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "underlyingToken", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "transmuter", "type": "address" }
+    ],
+    "name": "SetTransmuter",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "ADMIN",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
@@ -300,6 +309,16 @@
   },
   {
     "inputs": [
+      { "internalType": "address", "name": "underlyingToken", "type": "address" },
+      { "internalType": "address", "name": "newTransmuter", "type": "address" }
+    ],
+    "name": "setTransmuter",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       { "internalType": "address", "name": "weightToken", "type": "address" },
       { "internalType": "address[]", "name": "tokens", "type": "address[]" },
       { "internalType": "uint256[]", "name": "weights", "type": "uint256[]" }
@@ -327,6 +346,13 @@
     "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "name": "transmuter",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "version",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
   },

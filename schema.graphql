@@ -1,4 +1,88 @@
 ###############################################################################
+# IMPLEMENTATION
+###############################################################################
+
+type Account @entity {
+  id: ID!
+  alchemistBalances: [AlchemistBalance!]! @derivedFrom(field: "account")
+  alchemistActivity: [AlchemistBalanceHistory!]! @derivedFrom(field: "account")
+  transmuterBalances: [TransmuterBalance!]! @derivedFrom(field: "account")
+  transmuterActivity: [TransmuterBalanceHistory!]! @derivedFrom(field: "account")
+}
+
+type AlchemistBalance @entity {
+  id: ID!
+  account: Account!
+  alchemist: Alchemist!
+  yieldToken: YieldToken!
+  shares: BigInt!
+  underlyingValue: BigInt!
+  history: [AlchemistBalanceHistory!]! @derivedFrom(field: "balance")
+}
+
+type AlchemistBalanceHistory @entity {
+  id: ID!
+  transaction: Transaction!
+  balance: AlchemistBalance!
+  account: Account!
+  alchemist: Alchemist!
+  yieldToken: YieldToken!
+  shares: BigInt!
+  underlyingValue: BigInt!
+  change: BigInt!
+  event: Event!
+  block: Block!
+  timestamp: BigInt!
+}
+
+type TransmuterBalance @entity {
+  id: ID!
+  account: Account!
+  transmuter: Transmuter!
+  balance: BigInt!
+  activity: [TransmuterBalanceHistory!]! @derivedFrom(field: "balance")
+}
+
+type TransmuterBalanceHistory @entity {
+  id: ID!
+  transaction: Transaction!
+  account: Account!
+  balance: TransmuterBalance!
+  value: BigInt!
+  change: BigInt!
+  event: Event!
+  block: Block!
+  timestamp: BigInt!
+}
+
+"""
+An entity representing a yield-bearing asset.
+"""
+type YieldToken @entity {
+  id: ID!
+  decimals: BigInt!
+  name: String!
+  symbol: String!
+  underlyingToken: UnderlyingToken!
+  activity: [AlchemistBalanceHistory!]! @derivedFrom(field: "yieldToken")
+  balances: [AlchemistBalance!]! @derivedFrom(field: "yieldToken")
+}
+
+type UnderlyingToken @entity {
+  id: ID!
+  decimals: BigInt!
+  name: String!
+  symbol: String!
+}
+
+type DebtToken @entity {
+  id: ID!
+  decimals: BigInt!
+  name: String!
+  symbol: String!
+}
+
+###############################################################################
 # GENERIC
 ###############################################################################
 
@@ -43,8 +127,8 @@ interface Contract {
 type Alchemist implements Contract @entity {
   id: ID!
   events: [Event!]! @derivedFrom(field: "contract")
-  deposits: [AlchemistDeposit!]! @derivedFrom(field: "alchemist")
-  activity: [AlchemistDepositHistory!]! @derivedFrom(field: "alchemist")
+  deposits: [AlchemistBalance!]! @derivedFrom(field: "alchemist")
+  activity: [AlchemistBalanceHistory!]! @derivedFrom(field: "alchemist")
 }
 
 type AlchemistAddUnderlyingTokenEvent implements Event @entity {
@@ -167,9 +251,8 @@ type AlchemistHarvestEvent implements Event @entity {
   timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
-  params: Bytes!
   yieldToken: Bytes!
-  maximumLoss: BigInt!
+  minimumAmountOut: BigInt!
   totalHarvested: BigInt!
 }
 
@@ -196,6 +279,7 @@ type AlchemistLiquidateEvent implements Event @entity {
   owner: Bytes!
   shares: BigInt!
   yieldToken: Bytes!
+  underlyingToken: Bytes!
 }
 
 type AlchemistLiquidationLimitUpdatedEvent implements Event @entity {
@@ -422,10 +506,12 @@ type AlchemistYieldTokenEnabledEvent implements Event @entity {
 
 type Transmuter implements Contract @entity {
   id: ID!
+  debtToken: DebtToken!
+  underlyingToken: UnderlyingToken!
   events: [Event!]! @derivedFrom(field: "contract")
 }
 
-type TransmuterAccountAddedEvent implements Event @entity {
+type TransmuterBalanceAddedEvent implements Event @entity {
   id: ID!
   cursor: BigInt!
   index: BigInt!
@@ -436,7 +522,7 @@ type TransmuterAccountAddedEvent implements Event @entity {
   account: Bytes!
 }
 
-type TransmuterAccountRemovedEvent implements Event @entity {
+type TransmuterBalanceRemovedEvent implements Event @entity {
   id: ID!
   cursor: BigInt!
   index: BigInt!
@@ -693,35 +779,4 @@ type TransmuterBufferSetSourceEvent implements Event @entity {
   transaction: Transaction!
   flag: Boolean!
   source: Bytes!
-}
-
-###############################################################################
-# IMPLEMENTATION
-###############################################################################
-
-type Account @entity {
-  id: ID!
-  deposits: [AlchemistDeposit!]! @derivedFrom(field: "account")
-  activity: [AlchemistDepositHistory!]! @derivedFrom(field: "account")
-}
-
-type AlchemistDeposit @entity {
-  id: ID!
-  account: Account!
-  alchemist: Alchemist!
-  shares: BigInt!
-  history: [AlchemistDepositHistory!]! @derivedFrom(field: "deposit")
-}
-
-type AlchemistDepositHistory @entity {
-  id: ID!
-  transaction: Transaction!
-  deposit: AlchemistDeposit!
-  account: Account!
-  alchemist: Alchemist!
-  shares: BigInt!
-  change: BigInt!
-  event: Event!
-  block: Block!
-  timestamp: BigInt!
 }

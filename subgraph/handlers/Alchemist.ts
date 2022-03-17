@@ -68,8 +68,9 @@ import {
 import {
   createEvent,
   getOrCreateAccount,
-  getOrCreateAlchemistDeposit,
-  getOrCreateAlchemistDepositHistory,
+  getOrCreateAlchemistBalance,
+  getOrCreateAlchemistBalanceHistory,
+  getOrCreateYieldToken,
 } from '../utils/entities';
 
 function getOrCreateAlchemist(event: ethereum.Event): Alchemist {
@@ -141,30 +142,6 @@ export function handleCreditUnlockRateUpdated(event: CreditUnlockRateUpdated): v
   entity.save();
 }
 
-export function handleDeposit(event: Deposit): void {
-  const entity = createAlchemistEvent<AlchemistDepositEvent>(event);
-  entity.amount = event.params.amount;
-  entity.recipient = event.params.recipient;
-  entity.sender = event.params.sender;
-  entity.yieldToken = event.params.yieldToken;
-  entity.save();
-
-  const alchemist = getOrCreateAlchemist(event);
-  const account = getOrCreateAccount(event.params.recipient);
-  const deposit = getOrCreateAlchemistDeposit(account, alchemist);
-
-  // TODO: The shares should be added to the event.
-  const contract = AlchemistContract.bind(event.address);
-  const position = contract.positions(event.params.recipient, event.params.yieldToken);
-  const shares = position.value0;
-  const change = shares.minus(deposit.shares);
-
-  deposit.shares = shares;
-  deposit.save();
-
-  getOrCreateAlchemistDepositHistory(deposit, change, event);
-}
-
 export function handleDonate(event: Donate): void {
   const entity = createAlchemistEvent<AlchemistDonateEvent>(event);
   entity.amount = event.params.amount;
@@ -175,7 +152,7 @@ export function handleDonate(event: Donate): void {
 
 export function handleHarvest(event: Harvest): void {
   const entity = createAlchemistEvent<AlchemistHarvestEvent>(event);
-  entity.maximumLoss = event.params.maximumLoss;
+  entity.minimumAmountOut = event.params.minimumAmountOut;
   entity.totalHarvested = event.params.totalHarvested;
   entity.yieldToken = event.params.yieldToken;
   entity.save();
@@ -186,23 +163,6 @@ export function handleKeeperSet(event: KeeperSet): void {
   entity.flag = event.params.flag;
   entity.sentinel = event.params.sentinel;
   entity.save();
-}
-
-export function handleLiquidate(event: Liquidate): void {
-  const entity = createAlchemistEvent<AlchemistLiquidateEvent>(event);
-  entity.owner = event.params.owner;
-  entity.shares = event.params.shares;
-  entity.yieldToken = event.params.yieldToken;
-  entity.save();
-
-  const alchemist = getOrCreateAlchemist(event);
-  const account = getOrCreateAccount(event.params.owner);
-  const deposit = getOrCreateAlchemistDeposit(account, alchemist);
-  deposit.shares = deposit.shares.minus(event.params.shares);
-  deposit.save();
-
-  const change = event.params.shares.times(BigInt.fromI32(-1));
-  getOrCreateAlchemistDepositHistory(deposit, change, event);
 }
 
 export function handleLiquidationLimitUpdated(event: LiquidationLimitUpdated): void {
@@ -317,6 +277,41 @@ export function handleUnderlyingTokenEnabled(event: UnderlyingTokenEnabled): voi
   entity.save();
 }
 
+export function handleYieldTokenEnabled(event: YieldTokenEnabled): void {
+  const entity = createAlchemistEvent<AlchemistYieldTokenEnabledEvent>(event);
+  entity.enabled = event.params.enabled;
+  entity.yieldToken = event.params.yieldToken;
+  entity.save();
+}
+
+export function handleDeposit(event: Deposit): void {
+  const entity = createAlchemistEvent<AlchemistDepositEvent>(event);
+  entity.amount = event.params.amount;
+  entity.recipient = event.params.recipient;
+  entity.sender = event.params.sender;
+  entity.yieldToken = event.params.yieldToken;
+  entity.save();
+
+  const alchemist = getOrCreateAlchemist(event);
+  const account = getOrCreateAccount(event.params.recipient);
+  const yieldToken = getOrCreateYieldToken(event.params.yieldToken);
+  const balance = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
+
+  // TODO: The shares should be added to the event.
+  const contract = AlchemistContract.bind(event.address);
+  const position = contract.positions(event.params.recipient, event.params.yieldToken);
+  const shares = position.value0;
+  const pps = contract.getUnderlyingTokensPerShare(event.params.yieldToken);
+  const underlyingValue = shares.times(pps);
+  const change = shares.minus(balance.shares);
+
+  balance.shares = shares;
+  balance.underlyingValue = underlyingValue;
+  balance.save();
+
+  getOrCreateAlchemistBalanceHistory(balance, change, event);
+}
+
 export function handleWithdraw(event: Withdraw): void {
   const entity = createAlchemistEvent<AlchemistWithdrawEvent>(event);
   entity.owner = event.params.owner;
@@ -325,19 +320,38 @@ export function handleWithdraw(event: Withdraw): void {
   entity.yieldToken = event.params.yieldToken;
   entity.save();
 
+  const contract = AlchemistContract.bind(event.address);
   const alchemist = getOrCreateAlchemist(event);
-  const account = getOrCreateAccount(event.params.recipient);
-  const deposit = getOrCreateAlchemistDeposit(account, alchemist);
+  const account = getOrCreateAccount(event.params.owner);
+  const yieldToken = getOrCreateYieldToken(event.params.yieldToken);
+  const deposit = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
   deposit.shares = deposit.shares.minus(event.params.shares);
+  const pps = contract.getUnderlyingTokensPerShare(event.params.yieldToken);
+  deposit.underlyingValue = deposit.shares.times(pps);
   deposit.save();
 
   const change = event.params.shares.times(BigInt.fromI32(-1));
-  getOrCreateAlchemistDepositHistory(deposit, change, event);
+  getOrCreateAlchemistBalanceHistory(deposit, change, event);
 }
 
-export function handleYieldTokenEnabled(event: YieldTokenEnabled): void {
-  const entity = createAlchemistEvent<AlchemistYieldTokenEnabledEvent>(event);
-  entity.enabled = event.params.enabled;
+export function handleLiquidate(event: Liquidate): void {
+  const entity = createAlchemistEvent<AlchemistLiquidateEvent>(event);
+  entity.owner = event.params.owner;
+  entity.shares = event.params.shares;
   entity.yieldToken = event.params.yieldToken;
+  entity.underlyingToken = event.params.underlyingToken;
   entity.save();
+
+  const contract = AlchemistContract.bind(event.address);
+  const alchemist = getOrCreateAlchemist(event);
+  const account = getOrCreateAccount(event.params.owner);
+  const yieldToken = getOrCreateYieldToken(event.params.yieldToken);
+  const deposit = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
+  deposit.shares = deposit.shares.minus(event.params.shares);
+  const pps = contract.getUnderlyingTokensPerShare(event.params.yieldToken);
+  deposit.underlyingValue = deposit.shares.times(pps);
+  deposit.save();
+
+  const change = event.params.shares.times(BigInt.fromI32(-1));
+  getOrCreateAlchemistBalanceHistory(deposit, change, event);
 }

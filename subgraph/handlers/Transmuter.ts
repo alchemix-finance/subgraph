@@ -1,4 +1,4 @@
-import { Bytes, Entity, ethereum } from '@graphprotocol/graph-ts';
+import { Bytes, BigInt, Entity, ethereum } from '@graphprotocol/graph-ts';
 import {
   Transmuter,
   TransmuterAdminUpdatedEvent,
@@ -24,7 +24,12 @@ import {
   RoleRevoked,
   Withdraw,
 } from '../generated/TransmuterV2_ETH/Transmuter';
-import { createEvent } from '../utils/entities';
+import {
+  createEvent,
+  getOrCreateTransmuterBalance,
+  getOrCreateAccount,
+  getOrCreateTransmuterBalanceHistory,
+} from '../utils/entities';
 
 function getOrCreateTransmuter(event: ethereum.Event): Transmuter {
   let entity = Transmuter.load(event.address.toHex());
@@ -57,6 +62,14 @@ export function handleClaim(event: Claim): void {
   entity.recipient = event.params.recipient;
   entity.sender = event.params.sender;
   entity.save();
+
+  const transmuter = getOrCreateTransmuter(event);
+  const account = getOrCreateAccount(event.params.sender);
+  const balance = getOrCreateTransmuterBalance(transmuter, account);
+  balance.balance = balance.balance.minus(event.params.amount);
+  balance.save();
+
+  getOrCreateTransmuterBalanceHistory(balance, event.params.amount.times(BigInt.fromI32(-1)), event);
 }
 
 export function handleDeposit(event: Deposit): void {
@@ -65,6 +78,14 @@ export function handleDeposit(event: Deposit): void {
   entity.owner = event.params.owner;
   entity.sender = event.params.sender;
   entity.save();
+
+  const transmuter = getOrCreateTransmuter(event);
+  const account = getOrCreateAccount(event.params.owner);
+  const balance = getOrCreateTransmuterBalance(transmuter, account);
+  balance.balance = balance.balance.plus(event.params.amount);
+  balance.save();
+
+  getOrCreateTransmuterBalanceHistory(balance, event.params.amount, event);
 }
 
 export function handleExchange(event: Exchange): void {
@@ -116,4 +137,12 @@ export function handleWithdraw(event: Withdraw): void {
   entity.recipient = event.params.recipient;
   entity.sender = event.params.sender;
   entity.save();
+
+  const transmuter = getOrCreateTransmuter(event);
+  const account = getOrCreateAccount(event.params.sender);
+  const balance = getOrCreateTransmuterBalance(transmuter, account);
+  balance.balance = balance.balance.minus(event.params.amount);
+  balance.save();
+
+  getOrCreateTransmuterBalanceHistory(balance, event.params.amount.times(BigInt.fromI32(-1)), event);
 }

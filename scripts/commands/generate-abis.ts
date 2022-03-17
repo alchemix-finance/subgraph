@@ -18,9 +18,9 @@ export const description = 'Extracts & clean abis from the deployment output';
 
 async function getAbis() {
   const artifacts = {
-    Alchemist: path.resolve(packageRoot, 'artifacts/localhost/AlchemistV2_alETH.json'),
-    Transmuter: path.resolve(packageRoot, 'artifacts/localhost/TransmuterV2_ETH.json'),
-    TransmuterBuffer: path.resolve(packageRoot, 'artifacts/localhost/TransmuterBuffer_alETH.json'),
+    Alchemist: path.resolve(packageRoot, 'v2-contracts/deployments/mainnet/AlchemistV2_alETH.json'),
+    Transmuter: path.resolve(packageRoot, 'v2-contracts/deployments/mainnet/TransmuterV2_ETH.json'),
+    TransmuterBuffer: path.resolve(packageRoot, 'v2-contracts/deployments/mainnet/TransmuterBuffer_alETH.json'),
   } as const;
 
   const contents = await Promise.all(

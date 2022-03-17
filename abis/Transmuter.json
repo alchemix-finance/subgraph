@@ -133,6 +133,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "conversionFactor",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "uint256", "name": "amount", "type": "uint256" },
       { "internalType": "address", "name": "owner", "type": "address" }
@@ -147,6 +154,13 @@
     "name": "exchange",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "owner", "type": "address" }],
+    "name": "getClaimableBalance",
+    "outputs": [{ "internalType": "uint256", "name": "claimableBalance", "type": "uint256" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -275,6 +289,13 @@
     "inputs": [],
     "name": "underlyingToken",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "version",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
   },

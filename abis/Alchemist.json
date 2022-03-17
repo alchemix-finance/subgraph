@@ -83,7 +83,7 @@
     "anonymous": false,
     "inputs": [
       { "indexed": true, "internalType": "address", "name": "yieldToken", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "maximumLoss", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "minimumAmountOut", "type": "uint256" },
       { "indexed": false, "internalType": "uint256", "name": "totalHarvested", "type": "uint256" }
     ],
     "name": "Harvest",
@@ -103,6 +103,7 @@
     "inputs": [
       { "indexed": true, "internalType": "address", "name": "owner", "type": "address" },
       { "indexed": true, "internalType": "address", "name": "yieldToken", "type": "address" },
+      { "indexed": true, "internalType": "address", "name": "underlyingToken", "type": "address" },
       { "indexed": false, "internalType": "uint256", "name": "shares", "type": "uint256" }
     ],
     "name": "Liquidate",
@@ -845,6 +846,13 @@
     "inputs": [],
     "name": "transmuter",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "version",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
   },
