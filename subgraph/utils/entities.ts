@@ -10,6 +10,8 @@ import {
   TransmuterBalance,
   Transmuter,
   TransmuterBalanceHistory,
+  AlchemistTVL,
+  AlchemistTVLHistory,
 } from '../generated/schema';
 import { uniqueEventId, sortableEventCursor } from './id';
 
@@ -163,6 +165,55 @@ export function getOrCreateTransmuterBalanceHistory(
     entity.balance = state.id;
     entity.value = state.balance;
     entity.event = eventId;
+    entity.block = event.block.number.toString();
+    entity.transaction = event.transaction.hash.toHex();
+    entity.timestamp = event.block.timestamp;
+    entity.save();
+  }
+
+  return entity;
+}
+
+export function getOrCreateAlchemistTVL(
+  alchemist: Alchemist,
+  token: YieldToken,
+  amount: BigInt,
+  underlyingValue: BigInt,
+): AlchemistTVL {
+  const id = alchemist.id + '/' + token.id;
+  let entity = AlchemistTVL.load(id);
+
+  if (!entity) {
+    entity = new AlchemistTVL(id);
+    entity.alchemist = alchemist.id;
+    entity.token = token.id;
+    entity.amount = amount;
+    entity.underlyingValue = underlyingValue;
+    entity.save();
+  }
+
+  return entity;
+}
+
+export function getOrCreateAlchemistTVLHistory(
+  state: AlchemistTVL,
+  amountChange: BigInt,
+  underlyingValueChange: BigInt,
+  event: ethereum.Event,
+): AlchemistTVLHistory {
+  const eventId = uniqueEventId(event);
+  const id = state.id + '/' + eventId;
+  let entity = AlchemistTVLHistory.load(id);
+
+  if (!entity) {
+    entity = new AlchemistTVLHistory(id);
+    entity.tvl = state.id;
+    entity.alchemist = state.alchemist;
+    entity.token = state.token;
+    entity.amount = state.amount;
+    entity.amountChange = amountChange;
+    entity.underlyingValue = state.underlyingValue;
+    entity.underlyingValueChange = underlyingValueChange;
     entity.block = event.block.number.toString();
     entity.transaction = event.transaction.hash.toHex();
     entity.timestamp = event.block.timestamp;

@@ -126,9 +126,34 @@ interface Contract {
 
 type Alchemist implements Contract @entity {
   id: ID!
+  tvls: [AlchemistTVL!]! @derivedFrom(field: "alchemist")
   events: [Event!]! @derivedFrom(field: "contract")
   deposits: [AlchemistBalance!]! @derivedFrom(field: "alchemist")
   activity: [AlchemistBalanceHistory!]! @derivedFrom(field: "alchemist")
+}
+
+type AlchemistTVL @entity {
+  id: ID!
+  alchemist: Alchemist!
+  token: YieldToken!
+  amount: BigInt!
+  underlyingValue: BigInt!
+  activity: [AlchemistTVLHistory!]! @derivedFrom(field: "tvl")
+}
+
+type AlchemistTVLHistory @entity {
+  id: ID!
+  tvl: AlchemistTVL!
+  alchemist: Alchemist!
+  token: YieldToken!
+  amount: BigInt!
+  underlyingValue: BigInt!
+  amountChange: BigInt!
+  underlyingValueChange: BigInt!
+  transaction: Transaction!
+  event: Event!
+  block: Block!
+  timestamp: BigInt!
 }
 
 type AlchemistAddUnderlyingTokenEvent implements Event @entity {

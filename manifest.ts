@@ -3,6 +3,7 @@ import 'dotenv/config';
 import { createAlchemist } from './sources/Alchemist';
 import { createTransmuter } from './sources/Transmuter';
 import { createTransmuterBuffer } from './sources/TransmuterBuffer';
+import { createErc20 } from './sources/ERC20';
 
 export default {
   specVersion: '0.0.4',
@@ -12,6 +13,7 @@ export default {
     file: './schema.graphql',
   },
   dataSources: [
+    createErc20('ERC20'),
     createAlchemist('AlchemistV2_alUSD'),
     createAlchemist('AlchemistV2_alETH'),
     createTransmuter('TransmuterV2_DAI'),

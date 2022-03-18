@@ -71,7 +71,10 @@ import {
   getOrCreateAlchemistBalance,
   getOrCreateAlchemistBalanceHistory,
   getOrCreateYieldToken,
+  getOrCreateAlchemistTVL,
+  getOrCreateAlchemistTVLHistory,
 } from '../utils/entities';
+import { ERC20 as ERC20Contract } from '../generated/ERC20/ERC20';
 
 function getOrCreateAlchemist(event: ethereum.Event): Alchemist {
   let entity = Alchemist.load(event.address.toHex());
@@ -298,18 +301,32 @@ export function handleDeposit(event: Deposit): void {
   const balance = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
 
   // TODO: The shares should be added to the event.
-  const contract = AlchemistContract.bind(event.address);
-  const position = contract.positions(event.params.recipient, event.params.yieldToken);
+  const alchemistContract = AlchemistContract.bind(event.address);
+  const position = alchemistContract.positions(event.params.recipient, event.params.yieldToken);
   const shares = position.value0;
-  const pps = contract.getUnderlyingTokensPerShare(event.params.yieldToken);
+  const pps = alchemistContract.getUnderlyingTokensPerShare(event.params.yieldToken);
   const underlyingValue = shares.times(pps);
-  const change = shares.minus(balance.shares);
+  const balChange = shares.minus(balance.shares);
 
   balance.shares = shares;
   balance.underlyingValue = underlyingValue;
   balance.save();
 
-  getOrCreateAlchemistBalanceHistory(balance, change, event);
+  getOrCreateAlchemistBalanceHistory(balance, balChange, event);
+
+  const yieldTokenContract = ERC20Contract.bind(event.params.yieldToken);
+  const yieldTokenBalance = yieldTokenContract.balanceOf(event.address);
+  const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
+  const totalUnderlyingValue = yieldTokenParams.totalShares.times(pps);
+  const tvl = getOrCreateAlchemistTVL(alchemist, yieldToken, yieldTokenBalance, totalUnderlyingValue);
+  const amountChange = yieldTokenBalance.minus(tvl.amount);
+  const underlyingValueChange = totalUnderlyingValue.minus(tvl.underlyingValue);
+
+  tvl.amount = yieldTokenBalance;
+  tvl.underlyingValue = totalUnderlyingValue;
+  tvl.save();
+
+  getOrCreateAlchemistTVLHistory(tvl, amountChange, underlyingValueChange, event);
 }
 
 export function handleWithdraw(event: Withdraw): void {
@@ -320,18 +337,32 @@ export function handleWithdraw(event: Withdraw): void {
   entity.yieldToken = event.params.yieldToken;
   entity.save();
 
-  const contract = AlchemistContract.bind(event.address);
+  const alchemistContract = AlchemistContract.bind(event.address);
   const alchemist = getOrCreateAlchemist(event);
   const account = getOrCreateAccount(event.params.owner);
   const yieldToken = getOrCreateYieldToken(event.params.yieldToken);
   const deposit = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
   deposit.shares = deposit.shares.minus(event.params.shares);
-  const pps = contract.getUnderlyingTokensPerShare(event.params.yieldToken);
+  const pps = alchemistContract.getUnderlyingTokensPerShare(event.params.yieldToken);
   deposit.underlyingValue = deposit.shares.times(pps);
   deposit.save();
 
   const change = event.params.shares.times(BigInt.fromI32(-1));
   getOrCreateAlchemistBalanceHistory(deposit, change, event);
+
+  const yieldTokenContract = ERC20Contract.bind(event.params.yieldToken);
+  const yieldTokenBalance = yieldTokenContract.balanceOf(event.address);
+  const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
+  const totalUnderlyingValue = yieldTokenParams.totalShares.times(pps);
+  const tvl = getOrCreateAlchemistTVL(alchemist, yieldToken, yieldTokenBalance, totalUnderlyingValue);
+  const amountChange = tvl.amount.minus(yieldTokenBalance);
+  const underlyingValueChange = tvl.underlyingValue.minus(totalUnderlyingValue);
+
+  tvl.amount = yieldTokenBalance;
+  tvl.underlyingValue = totalUnderlyingValue;
+  tvl.save();
+
+  getOrCreateAlchemistTVLHistory(tvl, amountChange, underlyingValueChange, event);
 }
 
 export function handleLiquidate(event: Liquidate): void {
@@ -342,16 +373,30 @@ export function handleLiquidate(event: Liquidate): void {
   entity.underlyingToken = event.params.underlyingToken;
   entity.save();
 
-  const contract = AlchemistContract.bind(event.address);
+  const alchemistContract = AlchemistContract.bind(event.address);
   const alchemist = getOrCreateAlchemist(event);
   const account = getOrCreateAccount(event.params.owner);
   const yieldToken = getOrCreateYieldToken(event.params.yieldToken);
   const deposit = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
   deposit.shares = deposit.shares.minus(event.params.shares);
-  const pps = contract.getUnderlyingTokensPerShare(event.params.yieldToken);
+  const pps = alchemistContract.getUnderlyingTokensPerShare(event.params.yieldToken);
   deposit.underlyingValue = deposit.shares.times(pps);
   deposit.save();
 
   const change = event.params.shares.times(BigInt.fromI32(-1));
   getOrCreateAlchemistBalanceHistory(deposit, change, event);
+
+  const yieldTokenContract = ERC20Contract.bind(event.params.yieldToken);
+  const yieldTokenBalance = yieldTokenContract.balanceOf(event.address);
+  const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
+  const totalUnderlyingValue = yieldTokenParams.totalShares.times(pps);
+  const tvl = getOrCreateAlchemistTVL(alchemist, yieldToken, yieldTokenBalance, totalUnderlyingValue);
+  const amountChange = tvl.amount.minus(yieldTokenBalance);
+  const underlyingValueChange = tvl.underlyingValue.minus(totalUnderlyingValue);
+
+  tvl.amount = yieldTokenBalance;
+  tvl.underlyingValue = totalUnderlyingValue;
+  tvl.save();
+
+  getOrCreateAlchemistTVLHistory(tvl, amountChange, underlyingValueChange, event);
 }
