@@ -27,6 +27,10 @@ export function createAlchemist(
           name: 'Alchemist',
           file: 'abis/Alchemist.json',
         },
+        {
+          name: 'ERC20',
+          file: 'abis/ERC20.json',
+        },
       ],
     },
     source: {

@@ -27,6 +27,10 @@ export function createTransmuter(
           name: 'Transmuter',
           file: 'abis/Transmuter.json',
         },
+        {
+          name: 'ERC20',
+          file: 'abis/ERC20.json',
+        },
       ],
     },
     source: {

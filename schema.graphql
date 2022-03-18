@@ -126,10 +126,10 @@ interface Contract {
 
 type Alchemist implements Contract @entity {
   id: ID!
-  tvls: [AlchemistTVL!]! @derivedFrom(field: "alchemist")
   events: [Event!]! @derivedFrom(field: "contract")
   deposits: [AlchemistBalance!]! @derivedFrom(field: "alchemist")
   activity: [AlchemistBalanceHistory!]! @derivedFrom(field: "alchemist")
+  tvls: [AlchemistTVL!]! @derivedFrom(field: "alchemist")
 }
 
 type AlchemistTVL @entity {

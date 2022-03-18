@@ -65,6 +65,7 @@ import {
   YieldTokenEnabled,
   CreditUnlockRateUpdated,
 } from '../generated/AlchemistV2_alETH/Alchemist';
+import { ERC20 as ERC20Contract } from '../generated/AlchemistV2_alETH/ERC20';
 import {
   createEvent,
   getOrCreateAccount,
@@ -74,7 +75,6 @@ import {
   getOrCreateAlchemistTVL,
   getOrCreateAlchemistTVLHistory,
 } from '../utils/entities';
-import { ERC20 as ERC20Contract } from '../generated/ERC20/ERC20';
 
 function getOrCreateAlchemist(event: ethereum.Event): Alchemist {
   let entity = Alchemist.load(event.address.toHex());
