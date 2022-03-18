@@ -13,7 +13,8 @@
     "build": "graph build subgraph.js --skip-migrations",
     "predeploy": "graph create alchemix/alchemix --node http://127.0.0.1:8020 || true",
     "deploy": "graph deploy alchemix/alchemix subgraph.js --ipfs http://localhost:5001 --node http://127.0.0.1:8020/ --skip-migrations --version-label local",
-    "deploy-hosted": "graph deploy alchemix-finance/alchemix_v2 subgraph.js --product hosted-service --skip-migrations",
+    "deploy-prod": "graph deploy alchemix-finance/alchemix_v2 subgraph.js --product hosted-service --skip-migrations",
+    "deploy-dev": "graph deploy alchemix-finance/alchemix_v2 subgraph.js --product hosted-service-dev --skip-migrations",
     "lint": "prettier --ignore-path .gitignore --list-different \"**/*.{ts,js,json,yaml}\""
   },
   "devDependencies": {
