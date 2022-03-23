@@ -805,3 +805,176 @@ type TransmuterBufferSetSourceEvent implements Event @entity {
   flag: Boolean!
   source: Bytes!
 }
+
+###############################################################################
+# CURVE
+###############################################################################
+
+type Pool @entity {
+  id: ID!
+  isMeta: Boolean!
+  swapAddress: Bytes!
+  coinCount: BigInt!
+  coins: [Coin!] @derivedFrom(field: "pool")
+  underlyingCount: BigInt!
+  underlyingCoins: [UnderlyingCoin!] @derivedFrom(field: "pool")
+  A: BigInt
+  virtualPrice: BigDecimal!
+  locked: BigDecimal!
+  addedAt: BigInt!
+  addedAtBlock: BigInt!
+  addedAtTransaction: Bytes!
+  events: [PoolEvent!] @derivedFrom(field: "pool")
+  exchangeCount: BigInt!
+  exchanges: [PoolExchange!] @derivedFrom(field: "pool")
+  hourlyVolumes: [HourlyVolume!] @derivedFrom(field: "pool")
+  dailyVolumes: [DailyVolume!] @derivedFrom(field: "pool")
+  weeklyVolumes: [WeeklyVolume!] @derivedFrom(field: "pool")
+}
+
+type Coin @entity {
+  id: ID!
+  index: Int!
+  pool: Pool!
+  token: Token!
+  underlying: UnderlyingCoin!
+  balance: BigDecimal!
+  rate: BigDecimal!
+  updated: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTransaction: Bytes!
+}
+
+type UnderlyingCoin @entity {
+  id: ID!
+  index: Int!
+  pool: Pool!
+  token: Token!
+  coin: Coin!
+  balance: BigDecimal!
+  updated: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTransaction: Bytes!
+}
+
+type Token @entity {
+  id: ID!
+  address: Bytes!
+  decimals: BigInt!
+  name: String
+  symbol: String
+  pools: [Pool!]
+  coins: [Coin!] @derivedFrom(field: "token")
+  underlyingCoins: [UnderlyingCoin!] @derivedFrom(field: "token")
+}
+
+interface TradeVolume @entity {
+  pool: Pool!
+  timestamp: BigInt!
+  volume: BigDecimal!
+}
+
+type DailyVolume implements TradeVolume @entity {
+  id: ID!
+  pool: Pool!
+  timestamp: BigInt!
+  volume: BigDecimal!
+}
+
+type HourlyVolume implements TradeVolume @entity {
+  id: ID!
+  pool: Pool!
+  timestamp: BigInt!
+  volume: BigDecimal!
+}
+
+type WeeklyVolume implements TradeVolume @entity {
+  id: ID!
+  pool: Pool!
+  timestamp: BigInt!
+  volume: BigDecimal!
+}
+
+interface PoolEvent @entity {
+  pool: Pool!
+
+  block: BigInt!
+  timestamp: BigInt!
+  transaction: Bytes!
+}
+
+type PoolAddLiquidityEvent implements PoolEvent @entity {
+  id: ID!
+  pool: Pool!
+  provider: Account!
+  tokenAmounts: [BigInt!]!
+  fees: [BigInt!]!
+  invariant: BigInt!
+  tokenSupply: BigInt!
+
+  block: BigInt!
+  timestamp: BigInt!
+  transaction: Bytes!
+}
+
+type PoolRemoveLiquidityEvent implements PoolEvent @entity {
+  id: ID!
+  pool: Pool!
+  provider: Account!
+  tokenAmounts: [BigInt!]!
+  fees: [BigInt!]
+  tokenSupply: BigInt
+  invariant: BigInt
+
+  block: BigInt!
+  timestamp: BigInt!
+  transaction: Bytes!
+}
+
+type PoolRemoveLiquidityOneEvent implements PoolEvent @entity {
+  id: ID!
+  pool: Pool!
+  provider: Account!
+  tokenAmount: BigInt!
+  coinAmount: BigInt!
+
+  block: BigInt!
+  timestamp: BigInt!
+  transaction: Bytes!
+}
+
+type PoolExchange implements PoolEvent @entity {
+  id: ID!
+  pool: Pool!
+  buyer: Account!
+  receiver: Account!
+  tokenSold: Token!
+  tokenBought: Token!
+  amountSold: BigDecimal!
+  amountBought: BigDecimal!
+
+  block: BigInt!
+  timestamp: BigInt!
+  transaction: Bytes!
+}
+
+type PoolRate @entity {
+  id: ID!
+  pool: Pool!
+  inputToken: Bytes!
+  outputToken: Bytes!
+  inputAmount: BigInt!
+  outputAmount: BigInt!
+  historicalRates: [PoolHistoricalRate!]! @derivedFrom(field: "rate")
+}
+
+type PoolHistoricalRate @entity {
+  id: ID!
+  rate: PoolRate!
+  inputToken: Bytes!
+  outputToken: Bytes!
+  inputAmount: BigInt!
+  outputAmount: BigInt!
+  block: BigInt!
+  txIdx: BigInt!
+}
