@@ -317,7 +317,9 @@ export function handleDeposit(event: Deposit): void {
   const yieldTokenContract = ERC20Contract.bind(event.params.yieldToken);
   const yieldTokenBalance = yieldTokenContract.balanceOf(event.address);
   const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
-  const totalUnderlyingValue = yieldTokenParams.totalShares.times(pps);
+  const totalUnderlyingValue = yieldTokenParams.totalShares
+    .times(pps)
+    .div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));
   const tvl = getOrCreateAlchemistTVL(alchemist, yieldToken, yieldTokenBalance, totalUnderlyingValue);
   const amountChange = yieldTokenBalance.minus(tvl.amount);
   const underlyingValueChange = totalUnderlyingValue.minus(tvl.underlyingValue);
@@ -353,7 +355,9 @@ export function handleWithdraw(event: Withdraw): void {
   const yieldTokenContract = ERC20Contract.bind(event.params.yieldToken);
   const yieldTokenBalance = yieldTokenContract.balanceOf(event.address);
   const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
-  const totalUnderlyingValue = yieldTokenParams.totalShares.times(pps);
+  const totalUnderlyingValue = yieldTokenParams.totalShares
+    .times(pps)
+    .div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));
   const tvl = getOrCreateAlchemistTVL(alchemist, yieldToken, yieldTokenBalance, totalUnderlyingValue);
   const amountChange = tvl.amount.minus(yieldTokenBalance);
   const underlyingValueChange = tvl.underlyingValue.minus(totalUnderlyingValue);
@@ -389,7 +393,9 @@ export function handleLiquidate(event: Liquidate): void {
   const yieldTokenContract = ERC20Contract.bind(event.params.yieldToken);
   const yieldTokenBalance = yieldTokenContract.balanceOf(event.address);
   const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
-  const totalUnderlyingValue = yieldTokenParams.totalShares.times(pps);
+  const totalUnderlyingValue = yieldTokenParams.totalShares
+    .times(pps)
+    .div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));
   const tvl = getOrCreateAlchemistTVL(alchemist, yieldToken, yieldTokenBalance, totalUnderlyingValue);
   const amountChange = tvl.amount.minus(yieldTokenBalance);
   const underlyingValueChange = tvl.underlyingValue.minus(totalUnderlyingValue);
