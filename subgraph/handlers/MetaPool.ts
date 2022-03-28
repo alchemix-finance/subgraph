@@ -245,7 +245,7 @@ export function saveRate(
   event: ethereum.Event,
 ): void {
   let swapContract = MetaPool.bind(poolAddress);
-  let outputAmount = swapContract.get_dy_underlying(inputIdx, outputIdx, inputAmount);
+  let outputAmount = swapContract.try_get_dy_underlying(inputIdx, outputIdx, inputAmount);
   let id = pool.id + '/' + inputToken.toHex() + '/' + outputToken.toHex() + '/' + inputAmount.toString();
   let rate = PoolRate.load(id);
   if (!rate) {
@@ -255,7 +255,11 @@ export function saveRate(
     rate.outputToken = outputToken;
     rate.inputAmount = inputAmount;
   }
-  rate.outputAmount = outputAmount;
+  if (!outputAmount.reverted) {
+    rate.outputAmount = outputAmount.value;
+  } else {
+    rate.outputAmount = BigInt.fromI32(0);
+  }
   rate.save();
 
   saveHistoricalPoolRate(rate as PoolRate, event);
