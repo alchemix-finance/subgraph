@@ -1,25 +1,5 @@
 [
   {
-    "name": "Transfer",
-    "inputs": [
-      { "type": "address", "name": "sender", "indexed": true },
-      { "type": "address", "name": "receiver", "indexed": true },
-      { "type": "uint256", "name": "value", "indexed": false }
-    ],
-    "anonymous": false,
-    "type": "event"
-  },
-  {
-    "name": "Approval",
-    "inputs": [
-      { "type": "address", "name": "owner", "indexed": true },
-      { "type": "address", "name": "spender", "indexed": true },
-      { "type": "uint256", "name": "value", "indexed": false }
-    ],
-    "anonymous": false,
-    "type": "event"
-  },
-  {
     "name": "TokenExchange",
     "inputs": [
       { "type": "address", "name": "buyer", "indexed": true },
@@ -85,60 +65,6 @@
       { "type": "uint256[2]", "name": "fees", "indexed": false },
       { "type": "uint256", "name": "invariant", "indexed": false },
       { "type": "uint256", "name": "token_supply", "indexed": false }
-    ],
-    "anonymous": false,
-    "type": "event"
-  },
-  {
-    "name": "CommitNewAdmin",
-    "inputs": [
-      { "type": "uint256", "name": "deadline", "indexed": true },
-      { "type": "address", "name": "admin", "indexed": true }
-    ],
-    "anonymous": false,
-    "type": "event"
-  },
-  {
-    "name": "NewAdmin",
-    "inputs": [{ "type": "address", "name": "admin", "indexed": true }],
-    "anonymous": false,
-    "type": "event"
-  },
-  {
-    "name": "CommitNewFee",
-    "inputs": [
-      { "type": "uint256", "name": "deadline", "indexed": true },
-      { "type": "uint256", "name": "fee", "indexed": false },
-      { "type": "uint256", "name": "admin_fee", "indexed": false }
-    ],
-    "anonymous": false,
-    "type": "event"
-  },
-  {
-    "name": "NewFee",
-    "inputs": [
-      { "type": "uint256", "name": "fee", "indexed": false },
-      { "type": "uint256", "name": "admin_fee", "indexed": false }
-    ],
-    "anonymous": false,
-    "type": "event"
-  },
-  {
-    "name": "RampA",
-    "inputs": [
-      { "type": "uint256", "name": "old_A", "indexed": false },
-      { "type": "uint256", "name": "new_A", "indexed": false },
-      { "type": "uint256", "name": "initial_time", "indexed": false },
-      { "type": "uint256", "name": "future_time", "indexed": false }
-    ],
-    "anonymous": false,
-    "type": "event"
-  },
-  {
-    "name": "StopRampA",
-    "inputs": [
-      { "type": "uint256", "name": "A", "indexed": false },
-      { "type": "uint256", "name": "t", "indexed": false }
     ],
     "anonymous": false,
     "type": "event"

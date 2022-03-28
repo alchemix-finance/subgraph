@@ -1,11 +1,14 @@
-import { Address, dataSource, DataSourceContext, ethereum, BigInt, Bytes } from '@graphprotocol/graph-ts';
+import { Address, dataSource, DataSourceContext, ethereum, BigInt, Bytes, log } from '@graphprotocol/graph-ts';
 import { decimal, integer, ETH_TOKEN_ADDRESS } from '@protofire/subgraph-toolkit';
+import { getDailyTradeVolume, getHourlyTradeVolume, getWeeklyTradeVolume } from './volume';
 import {
   AddLiquidity,
   MetaPool,
   RemoveLiquidity,
   RemoveLiquidityImbalance,
   RemoveLiquidityOne,
+  TokenExchangeUnderlying,
+  TokenExchange,
 } from '../generated/alUSDMetaPool/MetaPool';
 import { ERC20 } from '../generated/alUSDMetaPool/ERC20';
 import { ALUSD_PAIRED_ASSETS } from '../utils/constants';
@@ -27,13 +30,12 @@ function getEventId(event: ethereum.Event): string {
   return event.transaction.hash.toHexString() + '-' + event.logIndex.toString();
 }
 
-function getPoolSnapshot(pool: Pool, event: ethereum.Event): Pool {
+function getPoolSnapshot(pool: Pool, poolAddress: Address, event: ethereum.Event): Pool {
   if (pool != null) {
-    let poolAddress = pool.swapAddress as Address;
-    let poolContract = MetaPool.bind(poolAddress as Address);
+    let poolContract = MetaPool.bind(poolAddress);
 
     // Update coin balances and underlying coin balances/rates
-    saveCoins(pool, event);
+    saveCoins(pool, poolAddress, event);
 
     // Save current virtual price
     let virtualPrice = poolContract.try_get_virtual_price();
@@ -46,11 +48,11 @@ function getPoolSnapshot(pool: Pool, event: ethereum.Event): Pool {
   return pool;
 }
 
-export function handleAddLiquidityEvent(event: AddLiquidity): void {
-  let pool = Pool.load(event.address.toHexString());
+export function handleAddLiquidity(event: AddLiquidity): void {
+  let pool = getOrCreatePool(event.address, event);
 
   if (pool != null) {
-    pool = getPoolSnapshot(pool, event);
+    pool = getPoolSnapshot(pool, event.address, event);
 
     let provider = getOrCreateAccount(event.params.provider);
 
@@ -71,11 +73,11 @@ export function handleAddLiquidityEvent(event: AddLiquidity): void {
   }
 }
 
-export function handleRemoveLiquidityEvent(event: RemoveLiquidity): void {}
+export function handleRemoveLiquidity(event: RemoveLiquidity): void {}
 
-export function handleRemoveLiquidityImbalanceEvent(event: RemoveLiquidityImbalance): void {}
+export function handleRemoveLiquidityImbalance(event: RemoveLiquidityImbalance): void {}
 
-export function handleRemoveLiquidityOneEvent(event: RemoveLiquidityOne): void {}
+export function handleRemoveLiquidityOne(event: RemoveLiquidityOne): void {}
 
 function getOrCreatePool(address: Address, event: ethereum.Event): Pool {
   let pool = Pool.load(address.toHexString());
@@ -94,7 +96,7 @@ function getOrCreatePool(address: Address, event: ethereum.Event): Pool {
     pool.isMeta = true;
 
     // Coin balances and underlying coin balances/rates
-    saveCoins(pool, event);
+    saveCoins(pool, address, event);
 
     // TODO: Calculate pool locked value
     pool.locked = decimal.ZERO;
@@ -115,9 +117,9 @@ function getOrCreatePool(address: Address, event: ethereum.Event): Pool {
   return pool;
 }
 
-export function getCoins(pool: Pool): Address[] {
+export function getCoins(pool: Pool, poolAddress: Address): Address[] {
   let addys: Address[] = [];
-  let poolContract = MetaPool.bind(pool.swapAddress as Address);
+  let poolContract = MetaPool.bind(poolAddress);
   for (let i = 0; i < 4; i++) {
     let coinAddress = poolContract.try_coins(BigInt.fromI32(i));
     if (coinAddress) {
@@ -127,97 +129,114 @@ export function getCoins(pool: Pool): Address[] {
   return addys;
 }
 
-export function saveCoins(pool: Pool, event: ethereum.Event): void {
-  let poolContract = MetaPool.bind(pool.swapAddress as Address);
+export function getOrCreateCoin(
+  pool: Pool,
+  token: Token,
+  coinIdx: number,
+  balance: BigInt,
+  event: ethereum.Event,
+): Coin {
+  let coinId = pool.id + '-' + coinIdx.toString();
+  let coin = Coin.load(coinId);
+  if (!coin) {
+    coin = new Coin(coinId);
+    coin.index = coinIdx as i32;
+    coin.pool = pool.id;
+    coin.token = token.id;
+    coin.underlying = coin.id;
+  }
+  coin.balance = balance ? decimal.fromBigInt(balance, token.decimals.toI32()) : decimal.ZERO;
+  coin.updated = event.block.timestamp;
+  coin.updatedAtBlock = event.block.number;
+  coin.updatedAtTransaction = event.transaction.hash;
+  coin.save();
+  return coin;
+}
+
+export function getOrCreateUnderlyingCoin(
+  pool: Pool,
+  token: Token,
+  coinIdx: number,
+  event: ethereum.Event,
+): UnderlyingCoin {
+  let underlyingCoinId = 'underlying-' + pool.id + '-' + coinIdx.toString();
+  let underlyingCoin = UnderlyingCoin.load(underlyingCoinId);
+  if (!underlyingCoin) {
+    underlyingCoin = new UnderlyingCoin(underlyingCoinId);
+    underlyingCoin.index = coinIdx as i32;
+    underlyingCoin.pool = pool.id;
+    underlyingCoin.token = token.id;
+    underlyingCoin.coin = underlyingCoin.id;
+    // underlyingCoin.balance = balances ? decimal.fromBigInt(balances![i]) : decimal.ZERO
+  }
+  underlyingCoin.balance = decimal.ZERO;
+  underlyingCoin.updated = event.block.timestamp;
+  underlyingCoin.updatedAtBlock = event.block.number;
+  underlyingCoin.updatedAtTransaction = event.transaction.hash;
+  underlyingCoin.save();
+  return underlyingCoin;
+}
+
+export function saveCoins(pool: Pool, poolAddress: Address, event: ethereum.Event): void {
+  let poolContract = MetaPool.bind(poolAddress);
 
   let addys: Address[] = [];
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 2; i++) {
     let coinAddress = poolContract.try_coins(BigInt.fromI32(i));
     if (coinAddress) {
       addys.push(coinAddress.value);
       let token = getOrCreateToken(coinAddress.value, event);
-
       let balance = poolContract.balances(BigInt.fromI32(i));
-      let coin = new Coin(pool.id + '-' + i.toString());
-      coin.index = i;
-      coin.pool = pool.id;
-      coin.token = token.id;
-      coin.underlying = coin.id;
-      coin.balance = balance ? decimal.fromBigInt(balance, token.decimals.toI32()) : decimal.ZERO;
-      coin.updated = event.block.timestamp;
-      coin.updatedAtBlock = event.block.number;
-      coin.updatedAtTransaction = event.transaction.hash;
-      coin.save();
+      getOrCreateCoin(pool, token, i, balance, event);
     }
   }
 
   let alToken = getOrCreateToken(addys[0], event);
-  let pairedAssets: string[] = [];
-  if (alToken.address.toHex() === '0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c') {
-    pairedAssets = ALUSD_PAIRED_ASSETS;
-  }
-  for (let i = 0; i < 4; i++) {
-    let coinAddress = poolContract.try_coins(BigInt.fromI32(i));
-    if (coinAddress) {
-      let token = getOrCreateToken(Address.fromString(pairedAssets[i]), event);
+  // let pairedAssets: string[] = [];
+  // if (alToken.address.toHex() === '0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c') {
+  //   pairedAssets = ALUSD_PAIRED_ASSETS;
+  // }
 
-      if (i != 0) {
-        let dec = alToken.decimals.toI32();
-        saveRate(
-          pool,
-          alToken.address,
-          BigInt.fromI32(0),
-          Address.fromString(pairedAssets[i]),
-          BigInt.fromI32(i),
-          BigInt.fromI32(1000000).times(BigInt.fromI32(10).pow(dec as u8)),
-          event,
-        ); // 1m
-        saveRate(
-          pool,
-          alToken.address,
-          BigInt.fromI32(0),
-          Address.fromString(pairedAssets[i]),
-          BigInt.fromI32(i),
-          BigInt.fromI32(10000000).times(BigInt.fromI32(10).pow(dec as u8)),
-          event,
-        ); // 10m
-        saveRate(
-          pool,
-          alToken.address,
-          BigInt.fromI32(0),
-          Address.fromString(pairedAssets[i]),
-          BigInt.fromI32(i),
-          BigInt.fromI32(50000000).times(BigInt.fromI32(10).pow(dec as u8)),
-          event,
-        ); // 50m
-        // if (pool.id === '0xc4c319e2d4d66cca4464c0c2b32c9bd23ebe784e') {
-        //   saveRate(pool, underlyingCoins![0], BigInt.fromI32(0), underlyingCoins![i], BigInt.fromI32(i), BigInt.fromI32(1000).times(BigInt.fromI32(10).pow(dec as u8)), event) // 1m
-        //   saveRate(pool, underlyingCoins![0], BigInt.fromI32(0), underlyingCoins![i], BigInt.fromI32(i), BigInt.fromI32(5000).times(BigInt.fromI32(10).pow(dec as u8)), event) // 1m
-        //   saveRate(pool, underlyingCoins![0], BigInt.fromI32(0), underlyingCoins![i], BigInt.fromI32(i), BigInt.fromI32(10000).times(BigInt.fromI32(10).pow(dec as u8)), event) // 1m
-        // } else if (pool.id === '0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c') {
-        //   saveRate(pool, underlyingCoins![0], BigInt.fromI32(0), underlyingCoins![i], BigInt.fromI32(i), BigInt.fromI32(1000000).times(BigInt.fromI32(10).pow(dec as u8)), event) // 1m
-        //   saveRate(pool, underlyingCoins![0], BigInt.fromI32(0), underlyingCoins![i], BigInt.fromI32(i), BigInt.fromI32(10000000).times(BigInt.fromI32(10).pow(dec as u8)), event) // 10m
-        //   saveRate(pool, underlyingCoins![0], BigInt.fromI32(0), underlyingCoins![i], BigInt.fromI32(i), BigInt.fromI32(50000000).times(BigInt.fromI32(10).pow(dec as u8)), event) // 50m
-        // }
-      }
-
-      let coin = new UnderlyingCoin(pool.id + '-' + i.toString());
-      coin.index = i;
-      coin.pool = pool.id;
-      coin.token = token.id;
-      coin.coin = coin.id;
-      // coin.balance = balances ? decimal.fromBigInt(balances![i]) : decimal.ZERO
-      coin.balance = decimal.ZERO;
-      coin.updated = event.block.timestamp;
-      coin.updatedAtBlock = event.block.number;
-      coin.updatedAtTransaction = event.transaction.hash;
-      coin.save();
-    }
+  for (let i = 0; i < 3; i++) {
+    let token = getOrCreateToken(Address.fromString(ALUSD_PAIRED_ASSETS[i]), event);
+    let dec = alToken.decimals.toI32();
+    saveRate(
+      pool,
+      poolAddress,
+      alToken.address,
+      BigInt.fromI32(0),
+      Address.fromString(ALUSD_PAIRED_ASSETS[i]),
+      BigInt.fromI32(i),
+      BigInt.fromI32(1000000).times(BigInt.fromI32(10).pow(dec as u8)),
+      event,
+    ); // 1m
+    saveRate(
+      pool,
+      poolAddress,
+      alToken.address,
+      BigInt.fromI32(0),
+      Address.fromString(ALUSD_PAIRED_ASSETS[i]),
+      BigInt.fromI32(i),
+      BigInt.fromI32(10000000).times(BigInt.fromI32(10).pow(dec as u8)),
+      event,
+    ); // 10m
+    saveRate(
+      pool,
+      poolAddress,
+      alToken.address,
+      BigInt.fromI32(0),
+      Address.fromString(ALUSD_PAIRED_ASSETS[i]),
+      BigInt.fromI32(i),
+      BigInt.fromI32(50000000).times(BigInt.fromI32(10).pow(dec as u8)),
+      event,
+    ); // 50m
+    getOrCreateUnderlyingCoin(pool, token, i, event);
   }
 }
 
 export function saveRate(
   pool: Pool,
+  poolAddress: Address,
   inputToken: Bytes,
   inputIdx: BigInt,
   outputToken: Bytes,
@@ -225,7 +244,7 @@ export function saveRate(
   inputAmount: BigInt,
   event: ethereum.Event,
 ): void {
-  let swapContract = MetaPool.bind(pool.swapAddress as Address);
+  let swapContract = MetaPool.bind(poolAddress);
   let outputAmount = swapContract.get_dy_underlying(inputIdx, outputIdx, inputAmount);
   let id = pool.id + '/' + inputToken.toHex() + '/' + outputToken.toHex() + '/' + inputAmount.toString();
   let rate = PoolRate.load(id);
@@ -248,6 +267,7 @@ export function saveHistoricalPoolRate(rate: PoolRate, event: ethereum.Event): v
   if (!historicalPoolRate) {
     historicalPoolRate = new PoolHistoricalRate(id);
     historicalPoolRate.rate = rate.id;
+    historicalPoolRate.timestamp = event.block.timestamp;
     historicalPoolRate.block = event.block.number;
     historicalPoolRate.txIdx = event.transaction.index;
     historicalPoolRate.inputToken = rate.inputToken;
@@ -300,3 +320,104 @@ function getTokenInfo(address: Address): TokenInfo {
     decimals.reverted ? 18 : decimals.value,
   );
 }
+export function handleTokenExchange(event: TokenExchange): void {}
+// export function handleTokenExchange(event: TokenExchange): void {
+//   let pool = getOrCreatePool(event.address, event);
+
+//     if (pool != null) {
+//       pool = getPoolSnapshot(pool, event.address, event)
+
+//       let coinSold = Coin.load(pool.id + '-' + event.params.sold_id.toString())!
+//       let tokenSold = Token.load(coinSold.token)!
+//       let amountSold = decimal.fromBigInt(event.params.tokens_sold, tokenSold.decimals.toI32())
+
+//       let coinBought = Coin.load(pool.id + '-' + event.params.bought_id.toString())!
+//       let tokenBought = Token.load(coinBought.token)!
+//       let amountBought = decimal.fromBigInt(event.params.tokens_bought, tokenBought.decimals.toI32())
+
+//       let buyer = getOrCreateAccount(event.params.buyer)
+
+//       // Save event log
+//       let exchange = new PoolExchange('e-' + getEventId(event))
+//       exchange.pool = pool.id
+//       exchange.buyer = buyer.id
+//       exchange.receiver = buyer.id
+//       exchange.tokenSold = tokenSold.id
+//       exchange.tokenBought = tokenBought.id
+//       exchange.amountSold = amountSold
+//       exchange.amountBought = amountBought
+//       exchange.block = event.block.number
+//       exchange.timestamp = event.block.timestamp
+//       exchange.transaction = event.transaction.hash
+//       exchange.save()
+
+//       // Save trade volume
+//       let volume = exchange.amountSold.plus(exchange.amountBought).div(decimal.TWO)
+
+//       let hourlyVolume = getHourlyTradeVolume(pool, event.block.timestamp)
+//       hourlyVolume.volume = hourlyVolume.volume.plus(volume)
+//       hourlyVolume.save()
+
+//       let dailyVolume = getDailyTradeVolume(pool, event.block.timestamp)
+//       dailyVolume.volume = dailyVolume.volume.plus(volume)
+//       dailyVolume.save()
+
+//       let weeklyVolume = getWeeklyTradeVolume(pool, event.block.timestamp)
+//       weeklyVolume.volume = weeklyVolume.volume.plus(volume)
+//       weeklyVolume.save()
+
+//       pool.exchangeCount = integer.increment(pool.exchangeCount)
+//       pool.save()
+//     }
+//   }
+export function handleTokenExchangeUnderlying(event: TokenExchangeUnderlying): void {}
+// export function handleTokenExchangeUnderlying(event: TokenExchangeUnderlying): void {
+//   let pool = getOrCreatePool(event.address, event);
+
+//   if (pool != null) {
+//     pool = getPoolSnapshot(pool, event.address, event)
+
+//     let coinSold = getOrCreateUnderlyingCoin(pool, token, event.params.sold_id, event);
+//     let coinSold = UnderlyingCoin.load(pool.id + '-' + event.params.sold_id.toString())!
+//     let tokenSold = Token.load(coinSold.token)!
+//     let amountSold = decimal.fromBigInt(event.params.tokens_sold, tokenSold.decimals.toI32())
+
+//     let coinBought = UnderlyingCoin.load(pool.id + '-' + event.params.bought_id.toString())!
+//     let tokenBought = Token.load(coinBought.token)!
+//     let amountBought = decimal.fromBigInt(event.params.tokens_bought, tokenBought.decimals.toI32())
+
+//     let buyer = getOrCreateAccount(event.params.buyer)
+
+//     // Save event log
+//     let exchange = new PoolExchange('e-' + getEventId(event))
+//     exchange.pool = pool.id
+//     exchange.buyer = buyer.id
+//     exchange.receiver = buyer.id
+//     exchange.tokenSold = tokenSold.id
+//     exchange.tokenBought = tokenBought.id
+//     exchange.amountSold = amountSold
+//     exchange.amountBought = amountBought
+//     exchange.block = event.block.number
+//     exchange.timestamp = event.block.timestamp
+//     exchange.transaction = event.transaction.hash
+//     exchange.save()
+
+//     // Save trade volume
+//     let volume = exchange.amountSold.plus(exchange.amountBought).div(decimal.TWO)
+
+//     let hourlyVolume = getHourlyTradeVolume(pool, event.block.timestamp)
+//     hourlyVolume.volume = hourlyVolume.volume.plus(volume)
+//     hourlyVolume.save()
+
+//     let dailyVolume = getDailyTradeVolume(pool, event.block.timestamp)
+//     dailyVolume.volume = dailyVolume.volume.plus(volume)
+//     dailyVolume.save()
+
+//     let weeklyVolume = getWeeklyTradeVolume(pool, event.block.timestamp)
+//     weeklyVolume.volume = weeklyVolume.volume.plus(volume)
+//     weeklyVolume.save()
+
+//     pool.exchangeCount = integer.increment(pool.exchangeCount)
+//     pool.save()
+//   }
+// }

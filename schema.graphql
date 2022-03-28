@@ -956,6 +956,7 @@ type PoolExchange implements PoolEvent @entity {
   block: BigInt!
   timestamp: BigInt!
   transaction: Bytes!
+  whatever: BigInt
 }
 
 type PoolRate @entity {
@@ -975,6 +976,7 @@ type PoolHistoricalRate @entity {
   outputToken: Bytes!
   inputAmount: BigInt!
   outputAmount: BigInt!
+  timestamp: BigInt!
   block: BigInt!
   txIdx: BigInt!
 }
