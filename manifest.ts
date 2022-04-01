@@ -3,6 +3,7 @@ import 'dotenv/config';
 import { createAlchemist } from './sources/Alchemist';
 import { createTransmuter } from './sources/Transmuter';
 import { createTransmuterBuffer } from './sources/TransmuterBuffer';
+import { createMetaPool } from './sources/MetaPool';
 
 export default {
   specVersion: '0.0.4',
@@ -20,5 +21,6 @@ export default {
     createTransmuter('TransmuterV2_ETH'),
     createTransmuterBuffer('TransmuterBuffer_alUSD'),
     createTransmuterBuffer('TransmuterBuffer_alETH'),
+    createMetaPool('alUSDMetaPool', 11955332, '0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c'),
   ],
 };
