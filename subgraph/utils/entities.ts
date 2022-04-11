@@ -113,7 +113,7 @@ export function getOrCreateAlchemistBalanceHistory(
     entity.shares = state.shares;
     entity.underlyingValue = state.underlyingValue;
     entity.event = eventId;
-    entity.block = event.block.number.toString();
+    entity.block = event.block.hash.toHex();
     entity.transaction = event.transaction.hash.toHex();
     entity.timestamp = event.block.timestamp;
     entity.save();
@@ -165,7 +165,7 @@ export function getOrCreateTransmuterBalanceHistory(
     entity.balance = state.id;
     entity.value = state.balance;
     entity.event = eventId;
-    entity.block = event.block.number.toString();
+    entity.block = event.block.hash.toHex();
     entity.transaction = event.transaction.hash.toHex();
     entity.timestamp = event.block.timestamp;
     entity.save();
@@ -214,7 +214,7 @@ export function getOrCreateAlchemistTVLHistory(
     entity.amountChange = amountChange;
     entity.underlyingValue = state.underlyingValue;
     entity.underlyingValueChange = underlyingValueChange;
-    entity.block = event.block.number.toString();
+    entity.block = event.block.hash.toHex();
     entity.transaction = event.transaction.hash.toHex();
     entity.timestamp = event.block.timestamp;
     entity.save();

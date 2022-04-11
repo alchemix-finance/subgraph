@@ -898,7 +898,7 @@ type WeeklyVolume implements TradeVolume @entity {
 interface PoolEvent @entity {
   pool: Pool!
 
-  block: BigInt!
+  block: Block!
   timestamp: BigInt!
   transaction: Bytes!
 }
@@ -912,7 +912,7 @@ type PoolAddLiquidityEvent implements PoolEvent @entity {
   invariant: BigInt!
   tokenSupply: BigInt!
 
-  block: BigInt!
+  block: Block!
   timestamp: BigInt!
   transaction: Bytes!
 }
@@ -926,7 +926,7 @@ type PoolRemoveLiquidityEvent implements PoolEvent @entity {
   tokenSupply: BigInt
   invariant: BigInt
 
-  block: BigInt!
+  block: Block!
   timestamp: BigInt!
   transaction: Bytes!
 }
@@ -938,7 +938,7 @@ type PoolRemoveLiquidityOneEvent implements PoolEvent @entity {
   tokenAmount: BigInt!
   coinAmount: BigInt!
 
-  block: BigInt!
+  block: Block!
   timestamp: BigInt!
   transaction: Bytes!
 }
@@ -953,7 +953,7 @@ type PoolExchange implements PoolEvent @entity {
   amountSold: BigDecimal!
   amountBought: BigDecimal!
 
-  block: BigInt!
+  block: Block!
   timestamp: BigInt!
   transaction: Bytes!
   whatever: BigInt
@@ -977,6 +977,6 @@ type PoolHistoricalRate @entity {
   inputAmount: BigInt!
   outputAmount: BigInt!
   timestamp: BigInt!
-  block: BigInt!
+  block: Block!
   txIdx: BigInt!
 }
