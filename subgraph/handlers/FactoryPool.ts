@@ -214,7 +214,7 @@ export function saveCoins(pool: Pool, poolAddress: Address, event: ethereum.Even
     BigInt.fromI32(1),
     Address.fromString(ALETH_PAIRED_ASSETS[0]),
     BigInt.fromI32(0),
-    BigInt.fromI32(1000000).times(BigInt.fromI32(10).pow(dec as u8)),
+    BigInt.fromI32(500).times(BigInt.fromI32(10).pow(dec as u8)),
     event,
   ); // 1m
   saveRate(
@@ -224,7 +224,7 @@ export function saveCoins(pool: Pool, poolAddress: Address, event: ethereum.Even
     BigInt.fromI32(1),
     Address.fromString(ALETH_PAIRED_ASSETS[0]),
     BigInt.fromI32(0),
-    BigInt.fromI32(10000000).times(BigInt.fromI32(10).pow(dec as u8)),
+    BigInt.fromI32(5000).times(BigInt.fromI32(10).pow(dec as u8)),
     event,
   ); // 10m
   saveRate(
@@ -234,7 +234,7 @@ export function saveCoins(pool: Pool, poolAddress: Address, event: ethereum.Even
     BigInt.fromI32(1),
     Address.fromString(ALETH_PAIRED_ASSETS[0]),
     BigInt.fromI32(0),
-    BigInt.fromI32(50000000).times(BigInt.fromI32(10).pow(dec as u8)),
+    BigInt.fromI32(20000).times(BigInt.fromI32(10).pow(dec as u8)),
     event,
   ); // 50m
   getOrCreateUnderlyingCoin(pool, token, 0, event);
