@@ -24,6 +24,12 @@ jobs:
           cache: yarn
           node-version: 16.x
 
+      - name: Setup SSH keys and hosts
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+
       - name: Install dependencies
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
@@ -59,6 +65,12 @@ jobs:
         with:
           cache: yarn
           node-version: 16.x
+
+      - name: Setup SSH keys and hosts
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
 
       - name: Install dependencies
         env:
