@@ -7,6 +7,8 @@ on:
       - dev
       - github_actions
   pull_request:
+    branches:
+      - github_actions
 
 jobs:
   deploy-dev:
@@ -14,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/github_actions'
     env:
-      NETWORK_NAME=mainnet
+      NETWORK_NAME: mainnet
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -51,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     env:
-      NETWORK_NAME=mainnet
+      NETWORK_NAME: mainnet
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
