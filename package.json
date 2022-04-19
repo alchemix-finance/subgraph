@@ -44,5 +44,8 @@
   },
   "lint-staged": {
     "*.{ts,js,json,yaml}": "prettier --write"
+  },
+  "dependencies": {
+    "@protofire/subgraph-toolkit": "0.1.2"
   }
 }
