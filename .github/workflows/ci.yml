@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+      - github_actions
+  pull_request:
+
+jobs:
+  deploy-dev:
+    name: Deploy the subgraph to dev
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/github_actions'
+    env:
+      NETWORK_NAME=mainnet
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          cache: yarn
+          node-version: 16.x
+
+      - name: Setup SSH keys and hosts
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${{ secrets.FAMILIAR_KEY }}"
+
+      - name: Install dependencies
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: yarn install --frozen-lockfile
+
+      - name: Authorize
+        run: graph auth --product hosted-service-dev ${{secrets.GRAPH_ACCESS_TOKEN}}
+
+      - name: Compile
+        run: yarn codegen
+      
+      - name: Build
+        run: yarn build
+
+      - name: Deploy
+        run: yarn deploy-dev
+
+  deploy-prod:
+    name: Deploy the subgraph to prod
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    env:
+      NETWORK_NAME=mainnet
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          cache: yarn
+          node-version: 16.x
+
+      - name: Setup SSH keys and hosts
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${{ secrets.FAMILIAR_KEY }}"
+
+      - name: Install dependencies
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: yarn install --frozen-lockfile
+
+      - name: Authorize
+        run: graph auth --product hosted-service ${{secrets.GRAPH_ACCESS_TOKEN}}
+
+      - name: Compile
+        run: yarn codegen
+      
+      - name: Build
+        run: yarn build
+
+      - name: Deploy
+        run: yarn deploy-prod
