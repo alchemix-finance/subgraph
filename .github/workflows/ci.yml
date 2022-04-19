@@ -35,6 +35,9 @@ jobs:
       - name: Authorize
         run: graph auth --product hosted-service-dev ${{secrets.GRAPH_ACCESS_TOKEN}}
 
+      - name: Install contracts
+        run: git submodule update --init
+
       - name: Compile
         run: yarn codegen
       
@@ -67,6 +70,9 @@ jobs:
 
       - name: Authorize
         run: graph auth --product hosted-service ${{secrets.GRAPH_ACCESS_TOKEN}}
+
+      - name: Install contracts
+        run: git submodule update --init
 
       - name: Compile
         run: yarn codegen
