@@ -40,7 +40,7 @@ jobs:
         run: sudo apt-get install libsecret-1-dev; yarn global add @graphprotocol/graph-cli;
 
       - name: Authorize
-        run: graph auth --product hosted-service-dev ${{secrets.GRAPH_ACCESS_TOKEN}}
+        run: graph auth --product hosted-service ${{secrets.GRAPH_ACCESS_TOKEN}}
 
       - name: Install contracts
         env:
