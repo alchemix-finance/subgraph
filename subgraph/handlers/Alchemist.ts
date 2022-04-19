@@ -305,7 +305,8 @@ export function handleDeposit(event: Deposit): void {
   const position = alchemistContract.positions(event.params.recipient, event.params.yieldToken);
   const shares = position.value0;
   const pps = alchemistContract.getUnderlyingTokensPerShare(event.params.yieldToken);
-  const underlyingValue = shares.times(pps);
+  const ytp = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
+  const underlyingValue = shares.times(pps).div(BigInt.fromI32(10).pow(ytp.decimals as u8));
   const balChange = shares.minus(balance.shares);
 
   balance.shares = shares;
