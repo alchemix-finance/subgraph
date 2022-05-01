@@ -1,3 +1,3 @@
 require('ts-node/register');
 
-module.exports = require('./manifest.ts').default;
+module.exports = require('./manifests/manifest.eth.ts').default;
