@@ -82,11 +82,57 @@ export function handleAddLiquidity(event: AddLiquidity): void {
   }
 }
 
-export function handleRemoveLiquidity(event: RemoveLiquidity): void {}
+export function handleRemoveLiquidity(event: RemoveLiquidity): void {
+  createMetaPoolEvent<PoolRemoveLiquidityEvent>(event);
+  let pool = getOrCreatePool(event.address, event);
+
+  if (pool != null) {
+    pool = getPoolSnapshot(pool, event.address, event);
+
+    let provider = getOrCreateAccount(event.params.provider);
+
+    // Save event log
+    let log = new PoolRemoveLiquidityEvent('rl-' + getEventId(event));
+    log.pool = pool.id;
+    log.provider = provider.id;
+    log.tokenAmounts = event.params.token_amounts;
+    log.fees = event.params.fees;
+    log.tokenSupply = event.params.token_supply;
+    log.block = event.block.hash.toHex();
+    log.timestamp = event.block.timestamp;
+    log.transaction = event.transaction.hash;
+    log.save();
+
+    pool.save();
+  }
+}
 
 export function handleRemoveLiquidityImbalance(event: RemoveLiquidityImbalance): void {}
 
-export function handleRemoveLiquidityOne(event: RemoveLiquidityOne): void {}
+export function handleRemoveLiquidityOne(event: RemoveLiquidityOne): void {
+  createMetaPoolEvent<PoolRemoveLiquidityOneEvent>(event);
+  let pool = getOrCreatePool(event.address, event);
+
+  if (pool != null) {
+    pool = getPoolSnapshot(pool, event.address, event);
+
+    let provider = getOrCreateAccount(event.params.provider);
+
+    // Save event log
+    let log = new PoolRemoveLiquidityOneEvent('rlo-' + getEventId(event));
+    log.pool = pool.id;
+    log.provider = provider.id;
+    log.tokenAmount = event.params.token_amount;
+    log.coinAmount = event.params.coin_amount;
+
+    log.block = event.block.hash.toHex();
+    log.timestamp = event.block.timestamp;
+    log.transaction = event.transaction.hash;
+    log.save();
+
+    pool.save();
+  }
+}
 
 function getOrCreatePool(address: Address, event: ethereum.Event): Pool {
   let pool = Pool.load(address.toHexString());
