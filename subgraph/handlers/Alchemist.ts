@@ -143,6 +143,14 @@ export function handleBurn(event: Burn): void {
   entity.recipient = event.params.recipient;
   entity.sender = event.params.sender;
   entity.save();
+
+  let alchemist = getOrCreateAlchemist(event);
+  let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
+  let newTotalDebt = alchDebt.debt.minus(event.params.amount);
+  alchDebt.debt = newTotalDebt;
+  alchDebt.save();
+
+  getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
 }
 
 export function handleCreditUnlockRateUpdated(event: CreditUnlockRateUpdated): void {
