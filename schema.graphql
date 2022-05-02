@@ -126,10 +126,27 @@ interface Contract {
 
 type Alchemist implements Contract @entity {
   id: ID!
+  debtToken: DebtToken!
+  globalDebt: AlchemistGlobalDebt!
+  globalDebtHistory: [AlchemistGlobalDebtHistory!] @derivedFrom(field: "alchemist")
   events: [Event!]! @derivedFrom(field: "contract")
   deposits: [AlchemistBalance!]! @derivedFrom(field: "alchemist")
   activity: [AlchemistBalanceHistory!]! @derivedFrom(field: "alchemist")
   tvls: [AlchemistTVL!]! @derivedFrom(field: "alchemist")
+}
+
+type AlchemistGlobalDebt @entity {
+  id: ID!
+  alchemist: Alchemist!
+  debt: BigInt!
+}
+
+type AlchemistGlobalDebtHistory @entity {
+  id: ID!
+  alchemist: Alchemist!
+  debt: BigInt!
+  transaction: Transaction!
+  block: Block!
 }
 
 type AlchemistTVL @entity {
