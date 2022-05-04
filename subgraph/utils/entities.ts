@@ -13,6 +13,7 @@ import {
   AlchemistTVL,
   AlchemistTVLHistory,
 } from '../generated/schema';
+import { ERC20 as ERC20Contract } from '../generated/AlchemistV2_alUSD/ERC20';
 import { uniqueEventId, sortableEventCursor } from './id';
 
 export function getOrCreateBlock(event: ethereum.Event): Block {
@@ -129,6 +130,9 @@ export function getOrCreateYieldToken(id: Address): YieldToken {
     entity = new YieldToken(id.toHex());
     entity.decimals = BigInt.fromI32(18);
     entity.underlyingToken = '0x0000000000000000000000000000000000000000';
+    const yieldTokenContract = ERC20Contract.bind(id);
+    entity.name = yieldTokenContract.name();
+    entity.symbol = yieldTokenContract.symbol();
     entity.save();
   }
 
