@@ -23,7 +23,7 @@ import {
   RoleGranted,
   RoleRevoked,
   Withdraw,
-} from '../generated/TransmuterV2_ETH/Transmuter';
+} from '../generated/TransmuterV2_DAI/Transmuter';
 import {
   createEvent,
   getOrCreateTransmuterBalance,
