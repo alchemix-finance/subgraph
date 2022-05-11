@@ -6,6 +6,7 @@ import {
   AlchemistBalanceHistory,
   Block,
   Transaction,
+  DebtToken,
   YieldToken,
   DebtToken,
   TransmuterBalance,

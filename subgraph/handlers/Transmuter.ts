@@ -23,12 +23,14 @@ import {
   RoleGranted,
   RoleRevoked,
   Withdraw,
+  Transmuter as TransmuterContract,
 } from '../generated/TransmuterV2_DAI/Transmuter';
 import {
   createEvent,
   getOrCreateTransmuterBalance,
   getOrCreateAccount,
   getOrCreateTransmuterBalanceHistory,
+  getOrCreateDebtToken,
 } from '../utils/entities';
 
 function getOrCreateTransmuter(event: ethereum.Event): Transmuter {
@@ -36,6 +38,13 @@ function getOrCreateTransmuter(event: ethereum.Event): Transmuter {
 
   if (!entity) {
     entity = new Transmuter(event.address.toHex());
+    let transmuter = TransmuterContract.bind(event.address);
+    let debtTokenAddress = transmuter.syntheticToken();
+    let debtToken = getOrCreateDebtToken(debtTokenAddress);
+    entity.debtToken = debtToken.id;
+    let underlyingTokenAddress = transmuter.underlyingToken();
+    let underlyingToken = getOrCreateDebtToken(underlyingTokenAddress);
+    entity.underlyingToken = underlyingToken.id;
     entity.save();
   }
 
