@@ -7,11 +7,14 @@ import {
   Block,
   Transaction,
   YieldToken,
+  DebtToken,
   TransmuterBalance,
   Transmuter,
   TransmuterBalanceHistory,
   AlchemistTVL,
   AlchemistTVLHistory,
+  AlchemistGlobalDebt,
+  AlchemistGlobalDebtHistory,
 } from '../generated/schema';
 import { ERC20 as ERC20Contract } from '../generated/AlchemistV2_alUSD/ERC20';
 import { uniqueEventId, sortableEventCursor } from './id';
@@ -123,6 +126,21 @@ export function getOrCreateAlchemistBalanceHistory(
   return entity;
 }
 
+export function getOrCreateDebtToken(id: Address): DebtToken {
+  let entity = DebtToken.load(id.toHex());
+
+  if (!entity) {
+    entity = new DebtToken(id.toHex());
+    entity.decimals = BigInt.fromI32(18);
+    const debtTokenContract = ERC20Contract.bind(id);
+    entity.name = debtTokenContract.name();
+    entity.symbol = debtTokenContract.symbol();
+    entity.save();
+  }
+
+  return entity;
+}
+
 export function getOrCreateYieldToken(id: Address): YieldToken {
   let entity = YieldToken.load(id.toHex());
 
@@ -221,6 +239,40 @@ export function getOrCreateAlchemistTVLHistory(
     entity.block = event.block.hash.toHex();
     entity.transaction = event.transaction.hash.toHex();
     entity.timestamp = event.block.timestamp;
+    entity.save();
+  }
+
+  return entity;
+}
+
+export function getOrCreateAlchemistGlobalDebt(alchemist: Alchemist): AlchemistGlobalDebt {
+  const id = 'global-debt' + '/' + alchemist.id;
+  let entity = AlchemistGlobalDebt.load(id);
+
+  if (!entity) {
+    entity = new AlchemistGlobalDebt(id);
+    entity.alchemist = alchemist.id;
+    entity.debt = BigInt.fromI32(0);
+    entity.save();
+  }
+
+  return entity;
+}
+
+export function getOrCreateAlchemistGlobalDebtHistory(
+  state: AlchemistGlobalDebt,
+  event: ethereum.Event,
+): AlchemistGlobalDebtHistory {
+  const eventId = uniqueEventId(event);
+  const id = state.id + '/' + eventId;
+  let entity = AlchemistGlobalDebtHistory.load(id);
+
+  if (!entity) {
+    entity = new AlchemistGlobalDebtHistory(id);
+    entity.alchemist = state.alchemist;
+    entity.debt = state.debt;
+    entity.block = event.block.hash.toHex();
+    entity.transaction = event.transaction.hash.toHex();
     entity.save();
   }
 
