@@ -15,6 +15,7 @@ import {
   AlchemistTVLHistory,
   AlchemistGlobalDebt,
   AlchemistGlobalDebtHistory,
+  UnderlyingToken,
 } from '../generated/schema';
 import { ERC20 as ERC20Contract } from '../generated/AlchemistV2_alUSD/ERC20';
 import { uniqueEventId, sortableEventCursor } from './id';
@@ -151,6 +152,21 @@ export function getOrCreateYieldToken(id: Address): YieldToken {
     const yieldTokenContract = ERC20Contract.bind(id);
     entity.name = yieldTokenContract.name();
     entity.symbol = yieldTokenContract.symbol();
+    entity.save();
+  }
+
+  return entity;
+}
+
+export function getOrCreateUnderlyingToken(id: Address): UnderlyingToken {
+  let entity = UnderlyingToken.load(id.toHex());
+
+  if (!entity) {
+    entity = new UnderlyingToken(id.toHex());
+    entity.decimals = BigInt.fromI32(18);
+    const underlyingTokenContract = ERC20Contract.bind(id);
+    entity.name = underlyingTokenContract.name();
+    entity.symbol = underlyingTokenContract.symbol();
     entity.save();
   }
 
