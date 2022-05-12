@@ -823,6 +823,31 @@ type TransmuterBufferSetSourceEvent implements Event @entity {
   source: Bytes!
 }
 
+type TransmuterBufferSetAmoEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  underlyingToken: UnderlyingToken!
+  amo: Bytes!
+}
+
+type TransmuterBufferSetDivertToAmoEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  underlyingToken: UnderlyingToken!
+  divert: Boolean!
+}
+
+
 ###############################################################################
 # CURVE
 ###############################################################################
