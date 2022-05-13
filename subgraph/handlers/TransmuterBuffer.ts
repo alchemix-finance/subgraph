@@ -9,6 +9,8 @@ import {
   TransmuterBufferSetAlchemistEvent,
   TransmuterBufferSetFlowRateEvent,
   TransmuterBufferSetSourceEvent,
+  TransmuterBufferSetAmoEvent,
+  TransmuterBufferSetDivertToAmoEvent,
 } from '../generated/schema';
 import {
   RefreshStrategies,
@@ -17,10 +19,12 @@ import {
   RoleGranted,
   RoleRevoked,
   SetAlchemist,
+  SetAmo,
   SetFlowRate,
   SetSource,
 } from '../generated/TransmuterBuffer_alETH/TransmuterBuffer';
-import { createEvent } from '../utils/entities';
+import { SetDivertToAmo } from '../generated/TransmuterBuffer_alUSD/TransmuterBuffer';
+import { createEvent, getOrCreateUnderlyingToken } from '../utils/entities';
 
 function getOrCreateTransmuterBuffer(event: ethereum.Event): TransmuterBuffer {
   let entity = TransmuterBuffer.load(event.address.toHex());
@@ -94,5 +98,21 @@ export function handleSetSource(event: SetSource): void {
   const entity = createTransmuterBufferEvent<TransmuterBufferSetSourceEvent>(event);
   entity.flag = event.params.flag;
   entity.source = event.params.source;
+  entity.save();
+}
+
+export function handleSetAmo(event: SetAmo): void {
+  const entity = createTransmuterBufferEvent<TransmuterBufferSetAmoEvent>(event);
+  let underlyingToken = getOrCreateUnderlyingToken(event.params.underlyingToken);
+  entity.underlyingToken = underlyingToken.id;
+  entity.amo = event.params.amo;
+  entity.save();
+}
+
+export function handleSetDivertToAmo(event: SetDivertToAmo): void {
+  const entity = createTransmuterBufferEvent<TransmuterBufferSetDivertToAmoEvent>(event);
+  let underlyingToken = getOrCreateUnderlyingToken(event.params.underlyingToken);
+  entity.underlyingToken = underlyingToken.id;
+  entity.divert = event.params.divert;
   entity.save();
 }

@@ -74,6 +74,10 @@ import {
   getOrCreateYieldToken,
   getOrCreateAlchemistTVL,
   getOrCreateAlchemistTVLHistory,
+  getOrCreateAlchemistGlobalDebt,
+  getOrCreateAlchemistGlobalDebtHistory,
+  getOrCreateDebtToken,
+  getOrCreateAlchemistGlobalDebt,
 } from '../utils/entities';
 
 function getOrCreateAlchemist(event: ethereum.Event): Alchemist {
@@ -81,6 +85,9 @@ function getOrCreateAlchemist(event: ethereum.Event): Alchemist {
 
   if (!entity) {
     entity = new Alchemist(event.address.toHex());
+    const alchemistContract = AlchemistContract.bind(event.address);
+    let debtToken = getOrCreateDebtToken(alchemistContract.debtToken());
+    entity.debtToken = debtToken.id;
     entity.save();
   }
 
@@ -136,6 +143,14 @@ export function handleBurn(event: Burn): void {
   entity.recipient = event.params.recipient;
   entity.sender = event.params.sender;
   entity.save();
+
+  let alchemist = getOrCreateAlchemist(event);
+  let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
+  let newTotalDebt = alchDebt.debt.minus(event.params.amount);
+  alchDebt.debt = newTotalDebt;
+  alchDebt.save();
+
+  getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
 }
 
 export function handleCreditUnlockRateUpdated(event: CreditUnlockRateUpdated): void {
@@ -151,6 +166,14 @@ export function handleDonate(event: Donate): void {
   entity.sender = event.params.sender;
   entity.yieldToken = event.params.yieldToken;
   entity.save();
+
+  let alchemist = getOrCreateAlchemist(event);
+  let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
+  let newTotalDebt = alchDebt.debt.minus(event.params.amount);
+  alchDebt.debt = newTotalDebt;
+  alchDebt.save();
+
+  getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
 }
 
 export function handleHarvest(event: Harvest): void {
@@ -159,6 +182,14 @@ export function handleHarvest(event: Harvest): void {
   entity.totalHarvested = event.params.totalHarvested;
   entity.yieldToken = event.params.yieldToken;
   entity.save();
+
+  let alchemist = getOrCreateAlchemist(event);
+  let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
+  let newTotalDebt = alchDebt.debt.minus(event.params.credit);
+  alchDebt.debt = newTotalDebt;
+  alchDebt.save();
+
+  getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
 }
 
 export function handleKeeperSet(event: KeeperSet): void {
@@ -202,6 +233,14 @@ export function handleMint(event: Mint): void {
   entity.owner = event.params.owner;
   entity.recipient = event.params.recipient;
   entity.save();
+
+  let alchemist = getOrCreateAlchemist(event);
+  let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
+  let newTotalDebt = alchDebt.debt.plus(event.params.amount);
+  alchDebt.debt = newTotalDebt;
+  alchDebt.save();
+
+  getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
 }
 
 export function handleMintingLimitUpdated(event: MintingLimitUpdated): void {
@@ -236,6 +275,14 @@ export function handleRepay(event: Repay): void {
   entity.sender = event.params.sender;
   entity.underlyingToken = event.params.underlyingToken;
   entity.save();
+
+  let alchemist = getOrCreateAlchemist(event);
+  let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
+  let newTotalDebt = alchDebt.debt.minus(event.params.credit);
+  alchDebt.debt = newTotalDebt;
+  alchDebt.save();
+
+  getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
 }
 
 export function handleRepayLimitUpdated(event: RepayLimitUpdated): void {
@@ -305,7 +352,8 @@ export function handleDeposit(event: Deposit): void {
   const position = alchemistContract.positions(event.params.recipient, event.params.yieldToken);
   const shares = position.value0;
   const pps = alchemistContract.getUnderlyingTokensPerShare(event.params.yieldToken);
-  const underlyingValue = shares.times(pps);
+  const ytp = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
+  const underlyingValue = shares.times(pps).div(BigInt.fromI32(10).pow(ytp.decimals as u8));
   const balChange = shares.minus(balance.shares);
 
   balance.shares = shares;
@@ -405,4 +453,11 @@ export function handleLiquidate(event: Liquidate): void {
   tvl.save();
 
   getOrCreateAlchemistTVLHistory(tvl, amountChange, underlyingValueChange, event);
+
+  let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
+  let newTotalDebt = alchDebt.debt.minus(event.params.credit);
+  alchDebt.debt = newTotalDebt;
+  alchDebt.save();
+
+  getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
 }

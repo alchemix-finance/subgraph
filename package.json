@@ -14,7 +14,7 @@
     "predeploy": "graph create alchemix/alchemix --node http://127.0.0.1:8020 || true",
     "deploy": "graph deploy alchemix/alchemix subgraph.js --ipfs http://localhost:5001 --node http://127.0.0.1:8020/ --skip-migrations --version-label local",
     "deploy-prod": "graph deploy alchemix-finance/alchemix_v2 subgraph.js --product hosted-service --skip-migrations",
-    "deploy-dev": "graph deploy alchemix-finance/alchemix_v2_dev subgraph.js --product hosted-service-dev --skip-migrations",
+    "deploy-dev": "graph deploy alchemix-finance/alchemix_v2_dev subgraph.js --product hosted-service --skip-migrations",
     "deploy-peg": "graph deploy alchemix-finance/alcx-curve-dev subgraph.js --product hosted-service --skip-migrations",
     "lint": "prettier --ignore-path .gitignore --list-different \"**/*.{ts,js,json,yaml}\""
   },
@@ -44,5 +44,8 @@
   },
   "lint-staged": {
     "*.{ts,js,json,yaml}": "prettier --write"
+  },
+  "dependencies": {
+    "@protofire/subgraph-toolkit": "0.1.2"
   }
 }
