@@ -16,6 +16,11 @@ import {
   AlchemistGlobalDebt,
   AlchemistGlobalDebtHistory,
   UnderlyingToken,
+  ThreePoolAssetManager,
+  ThreePoolAssetManagerThreePoolTokenBalanceHistory,
+  ThreePoolAssetManagerMetaPoolTokenBalanceHistory,
+  ThreePoolAssetManagerToken,
+  RewardsHistory,
 } from '../generated/schema';
 import { ERC20 as ERC20Contract } from '../generated/AlchemistV2_alUSD/ERC20';
 import { uniqueEventId, sortableEventCursor } from './id';
@@ -290,6 +295,99 @@ export function getOrCreateAlchemistGlobalDebtHistory(
     entity.block = event.block.hash.toHex();
     entity.transaction = event.transaction.hash.toHex();
     entity.save();
+  }
+
+  return entity;
+}
+
+export function getOrCreateThreePoolAssetManagerTokenBalance(
+  threePoolAssetManager: ThreePoolAssetManager,
+  token: UnderlyingToken,
+): ThreePoolAssetManagerToken {
+  const id = threePoolAssetManager.id + '/' + token.id;
+  let entity = ThreePoolAssetManagerToken.load(id);
+
+  if (!entity) {
+    entity = new ThreePoolAssetManagerToken(id);
+    entity.token = token.id;
+    entity.amount = BigInt.fromI32(0);
+    entity.save();
+  }
+
+  return entity;
+}
+
+export function getOrCreateThreePoolAssetManagerThreePoolTokenBalanceHistory(
+  state: ThreePoolAssetManagerToken,
+  amountChange: BigInt,
+  event: ethereum.Event,
+): ThreePoolAssetManagerThreePoolTokenBalanceHistory {
+  const eventId = uniqueEventId(event);
+  const id = state.id + '/' + eventId;
+  let entity = ThreePoolAssetManagerThreePoolTokenBalanceHistory.load(id);
+
+  if (!entity) {
+    entity = new ThreePoolAssetManagerThreePoolTokenBalanceHistory(id);
+    entity.transaction = event.transaction.hash.toHex();
+    entity.threePoolToken = state.token;
+    entity.threePoolAssetManager = state.id;
+    entity.amountChange = amountChange;
+    entity.balance = state.amount;
+    entity.event = eventId;
+    entity.block = event.block.hash.toHex();
+    entity.timestamp = event.block.timestamp;
+  }
+
+  return entity;
+}
+
+export function getOrCreateThreePoolAssetManagerMetaPoolTokenBalanceHistory(
+  state: ThreePoolAssetManagerToken,
+  amountChange: BigInt,
+  event: ethereum.Event,
+): ThreePoolAssetManagerMetaPoolTokenBalanceHistory {
+  const eventId = uniqueEventId(event);
+  const id = state.id + '/' + eventId;
+  let entity = ThreePoolAssetManagerMetaPoolTokenBalanceHistory.load(id);
+
+  if (!entity) {
+    entity = new ThreePoolAssetManagerMetaPoolTokenBalanceHistory(id);
+    entity.transaction = event.transaction.hash.toHex();
+    entity.metaPoolToken = state.token;
+    entity.threePoolAssetManager = state.id;
+    entity.amountChange = amountChange;
+    entity.balance = state.amount;
+    entity.event = eventId;
+    entity.block = event.block.hash.toHex();
+    entity.timestamp = event.block.timestamp;
+  }
+
+  return entity;
+}
+
+export function getOrCreateThreePoolAssetManagerRewardsHistory(
+  curveState: ThreePoolAssetManagerToken,
+  convexState: ThreePoolAssetManagerToken,
+  amountChangeCurve: BigInt,
+  amountChangeConvex: BigInt,
+  event: ethereum.Event,
+): RewardsHistory {
+  const eventId = uniqueEventId(event);
+  const id = curveState.id + '/' + convexState.id + '/' + eventId;
+  let entity = RewardsHistory.load(id);
+
+  if (!entity) {
+    entity = new RewardsHistory(id);
+    entity.transaction = event.transaction.hash.toHex();
+    entity.curveToken = curveState.id;
+    entity.convexToken = convexState.id;
+    entity.amountChangeCurve = amountChangeCurve;
+    entity.amountChangeConvex = amountChangeConvex;
+    entity.curveBalance = curveState.amount;
+    entity.convexBalance = convexState.amount;
+    entity.event = eventId;
+    entity.block = event.block.hash.toHex();
+    entity.timestamp = event.block.timestamp;
   }
 
   return entity;

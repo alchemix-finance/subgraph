@@ -5,6 +5,7 @@ import { createTransmuter } from './sources/Transmuter';
 import { createTransmuterBuffer } from './sources/TransmuterBuffer';
 import { createMetaPool } from './sources/MetaPool';
 import { createFactoryPool } from './sources/FactoryPool';
+import { createThreePoolAssetManager } from './sources/ThreePoolAssetManager';
 
 export default {
   specVersion: '0.0.4',
@@ -24,5 +25,6 @@ export default {
     createTransmuterBuffer('TransmuterBuffer_alETH'),
     createMetaPool('alUSDMetaPool', 11955332, '0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c'),
     createFactoryPool('alETHFactoryPool', 13227440, '0xc4c319e2d4d66cca4464c0c2b32c9bd23ebe784e'),
+    createThreePoolAssetManager('ThreePoolAssetManager_alUSD', 14543500, '0x9735F7d3Ea56b454b24fFD74C58E9bD85cfaD31B'),
   ],
 };

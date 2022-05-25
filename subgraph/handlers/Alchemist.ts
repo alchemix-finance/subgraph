@@ -77,7 +77,6 @@ import {
   getOrCreateAlchemistGlobalDebt,
   getOrCreateAlchemistGlobalDebtHistory,
   getOrCreateDebtToken,
-  getOrCreateAlchemistGlobalDebt,
 } from '../utils/entities';
 
 function getOrCreateAlchemist(event: ethereum.Event): Alchemist {

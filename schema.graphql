@@ -82,6 +82,13 @@ type DebtToken @entity {
   symbol: String!
 }
 
+type LpToken @entity {
+  id: ID!
+  decimals: BigInt!
+  name: String!
+  symbol: String!
+}
+
 ###############################################################################
 # GENERIC
 ###############################################################################
@@ -847,7 +854,6 @@ type TransmuterBufferSetDivertToAmoEvent implements Event @entity {
   divert: Boolean!
 }
 
-
 ###############################################################################
 # CURVE
 ###############################################################################
@@ -1021,4 +1027,279 @@ type PoolHistoricalRate @entity {
   timestamp: BigInt!
   block: Block!
   txIdx: BigInt!
+}
+
+###############################################################################
+# ThreePoolAssetManager
+###############################################################################
+
+type ThreePoolAssetManager implements Contract @entity {
+  id: ID!
+  threePoolTokens: [UnderlyingToken!]!
+  metaPoolTokens: [UnderlyingToken!]!
+  curveTokenBalance: ThreePoolAssetManagerToken!
+  convexTokenBalance: ThreePoolAssetManagerToken!
+  threePoolTokenBalance: [ThreePoolAssetManagerToken!]!
+  metaPoolTokenBalance: [ThreePoolAssetManagerToken!]!
+  threePoolTokenActivity: [ThreePoolAssetManagerThreePoolTokenBalanceHistory!]!
+    @derivedFrom(field: "threePoolAssetManager")
+  metaPoolTokenActivity: [ThreePoolAssetManagerMetaPoolTokenBalanceHistory!]!
+    @derivedFrom(field: "threePoolAssetManager")
+  rewardsActivity: [RewardsHistory!]! @derivedFrom(field: "threePoolAssetManager")
+  claimableRewards: ClaimableRewards!
+  events: [Event!]! @derivedFrom(field: "contract")
+}
+
+type ClaimableRewards @entity {
+  id: ID!
+  amountCurve: BigInt!
+  amountConvex: BigInt!
+}
+
+type RewardsHistory @entity {
+  id: ID!
+  transaction: Transaction!
+  curveToken: UnderlyingToken!
+  convexToken: UnderlyingToken!
+  threePoolAssetManager: ThreePoolAssetManager!
+  amountChangeCurve: BigInt!
+  amountChangeConvex: BigInt!
+  curveBalance: BigInt!
+  convexBalance: BigInt!
+  event: Event!
+  block: Block!
+  timestamp: BigInt!
+}
+
+type ThreePoolAssetManagerToken @entity {
+  id: ID!
+  token: UnderlyingToken!
+  amount: BigInt!
+}
+
+type ThreePoolAssetManagerThreePoolTokenBalanceHistory @entity {
+  id: ID!
+  transaction: Transaction!
+  threePoolToken: UnderlyingToken!
+  threePoolAssetManager: ThreePoolAssetManager!
+  amountChange: BigInt!
+  balance: BigInt!
+  event: Event!
+  block: Block!
+  timestamp: BigInt!
+}
+
+type ThreePoolAssetManagerMetaPoolTokenBalanceHistory @entity {
+  id: ID!
+  transaction: Transaction!
+  metaPoolToken: UnderlyingToken!
+  threePoolAssetManager: ThreePoolAssetManager!
+  amountChange: BigInt!
+  balance: BigInt!
+  event: Event!
+  block: Block!
+  timestamp: BigInt!
+}
+
+type ThreePoolAssetManagerAdminUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  admin: Bytes!
+}
+
+type ThreePoolAssetManagerPendingAdminUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  pendingAdmin: Bytes!
+}
+
+type ThreePoolAssetManagerOperatorUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  operator: Bytes!
+}
+
+type ThreePoolAssetManagerRewardReceiverUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  rewardReceiver: Bytes!
+}
+
+type ThreePoolAssetManagerTransmuterBufferUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  transmuterBuffer: Bytes!
+}
+
+type ThreePoolAssetManagerThreePoolSlippageUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  threePoolSlippage: BigInt!
+}
+
+type ThreePoolAssetManagerMetaPoolSlippageUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  metaPoolSlippage: BigInt!
+}
+
+type ThreePoolAssetManagerMintThreePoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amounts: [BigInt!]!
+  mintedThreePoolTokens: BigInt!
+}
+
+type ThreePoolAssetManagerMintThreePoolTokenEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  asset: Int!
+  amount: BigInt!
+  mintedThreePoolTokens: BigInt!
+}
+
+type ThreePoolAssetManagerBurnThreePoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  asset: Int!
+  amount: BigInt!
+  withdrawn: BigInt!
+}
+
+type ThreePoolAssetManagerMintMetaPoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amounts: [BigInt!]!
+  # should be fixed to mintedMetaPoolTokens once contract is fixed
+  mintedThreePoolTokens: BigInt!
+}
+
+type ThreePoolAssetManagerMintMetaPoolTokenEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  asset: Int!
+  amount: BigInt!
+  minted: BigInt!
+}
+
+type ThreePoolAssetManagerBurnMetaPoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  asset: Int!
+  amount: BigInt!
+  withdrawn: BigInt!
+}
+
+type ThreePoolAssetManagerDepositMetaPoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  success: Boolean!
+}
+
+type ThreePoolAssetManagerWithdrawMetaPoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  success: Boolean!
+}
+
+type ThreePoolAssetManagerClaimRewardsEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  success: Boolean!
+  amountCurve: BigInt!
+  amountConvex: BigInt!
+}
+
+type ThreePoolAssetManagerReclaimThreePoolAssetEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  asset: Int!
+  amount: BigInt!
 }
