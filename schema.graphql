@@ -1190,7 +1190,7 @@ type ThreePoolAssetManagerMintThreePoolTokensEvent implements Event @entity {
   mintedThreePoolTokens: BigInt!
 }
 
-type ThreePoolAssetManagerMintThreePoolTokenEvent implements Event @entity {
+type ThreePoolAssetManagerMintThreePoolTokensEvent1 implements Event @entity {
   id: ID!
   cursor: BigInt!
   index: BigInt!
@@ -1229,7 +1229,7 @@ type ThreePoolAssetManagerMintMetaPoolTokensEvent implements Event @entity {
   mintedThreePoolTokens: BigInt!
 }
 
-type ThreePoolAssetManagerMintMetaPoolTokenEvent implements Event @entity {
+type ThreePoolAssetManagerMintMetaPoolTokensEvent1 implements Event @entity {
   id: ID!
   cursor: BigInt!
   index: BigInt!
