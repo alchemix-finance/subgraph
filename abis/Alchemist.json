@@ -1,4 +1,46 @@
 [
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Liquidate",
+    "inputs": [
+      { "type": "address", "name": "owner", "indexed": true },
+      { "type": "address", "name": "yieldToken", "indexed": true },
+      { "type": "uint256", "name": "shares" }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Repay",
+    "inputs": [
+      { "type": "address", "name": "sender", "indexed": true },
+      { "type": "address", "name": "underlyingToken", "indexed": true },
+      { "type": "uint256", "name": "amount" },
+      { "type": "address", "name": "recipient" }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Liquidate",
+    "inputs": [
+      { "type": "address", "name": "owner", "indexed": true },
+      { "type": "address", "name": "yieldToken", "indexed": true },
+      { "type": "address", "name": "underlyingToken", "indexed": true },
+      { "type": "uint256", "name": "shares" }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Harvest",
+    "inputs": [
+      { "type": "address", "name": "yieldToken", "indexed": true },
+      { "type": "uint256", "name": "minimumAmountOut" },
+      { "type": "uint256", "name": "totalHarvested" }
+    ]
+  },
   { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
   {
     "anonymous": false,

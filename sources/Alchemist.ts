@@ -1,5 +1,5 @@
 import { utils } from 'ethers';
-import { eventDeclaration, deploymentAddress } from './utils/abis';
+import { eventDeclarations, deploymentAddress } from './utils/abis';
 import { networkName, startBlockNumber } from './utils/constants';
 import { DataSource } from './utils/types';
 
@@ -21,7 +21,7 @@ export function createAlchemist(
       language: 'wasm/assemblyscript',
       file: 'subgraph/handlers/Alchemist.ts',
       entities: [],
-      eventHandlers: AlchemistEvents.map((fragment) => eventDeclaration(fragment)),
+      eventHandlers: eventDeclarations(AlchemistEvents),
       abis: [
         {
           name: 'Alchemist',
