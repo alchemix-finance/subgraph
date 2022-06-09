@@ -8,9 +8,7 @@ import {
   ThreePoolAssetManagerDepositMetaPoolTokensEvent,
   ThreePoolAssetManagerMetaPoolSlippageUpdatedEvent,
   ThreePoolAssetManagerMintMetaPoolTokensEvent,
-  ThreePoolAssetManagerMintMetaPoolTokensEvent1,
   ThreePoolAssetManagerMintThreePoolTokensEvent,
-  ThreePoolAssetManagerMintThreePoolTokensEvent1,
   ThreePoolAssetManagerOperatorUpdatedEvent,
   ThreePoolAssetManagerPendingAdminUpdatedEvent,
   ThreePoolAssetManagerReclaimThreePoolAssetEvent,
@@ -111,23 +109,19 @@ export function handleMetaPoolSlippageUpdated(event: MetaPoolSlippageUpdated): v
   entity.save();
 }
 
-export function handleMintThreePoolTokens<T>(event: T): void {
-  if ((event as unknown as MintThreePoolTokens).params.amounts) {
-    const entity = createThreePoolAssetManagerEvent<ThreePoolAssetManagerMintThreePoolTokensEvent>(
-      event as unknown as MintThreePoolTokens,
-    );
-    entity.amounts = (event as unknown as MintThreePoolTokens).params.amounts;
-    entity.mintedThreePoolTokens = (event as unknown as MintThreePoolTokens).params.mintedThreePoolTokens;
-    entity.save();
-  } else if ((event as unknown as MintThreePoolTokens1).params.asset) {
-    const entity = createThreePoolAssetManagerEvent<ThreePoolAssetManagerMintThreePoolTokensEvent1>(
-      event as unknown as MintThreePoolTokens1,
-    );
-    entity.asset = (event as unknown as MintThreePoolTokens1).params.asset;
-    entity.amount = (event as unknown as MintThreePoolTokens1).params.amount;
-    entity.mintedThreePoolTokens = (event as unknown as MintThreePoolTokens1).params.mintedThreePoolTokens;
-    entity.save();
-  }
+export function handleMintThreePoolTokens(event: MintThreePoolTokens): void {
+  const entity = createThreePoolAssetManagerEvent<ThreePoolAssetManagerMintThreePoolTokensEvent>(event);
+  entity.amounts = event.params.amounts;
+  entity.mintedThreePoolTokens = event.params.mintedThreePoolTokens;
+  entity.save();
+}
+
+export function handleMintThreePoolTokens1(event: MintThreePoolTokens1): void {
+  const entity = createThreePoolAssetManagerEvent<ThreePoolAssetManagerMintThreePoolTokensEvent>(event);
+  entity.asset = event.params.asset;
+  entity.amount = event.params.amount;
+  entity.mintedThreePoolTokens = event.params.mintedThreePoolTokens;
+  entity.save();
 }
 
 export function handleBurnThreePoolTokens(event: BurnThreePoolTokens): void {
@@ -150,23 +144,19 @@ export function handleBurnThreePoolTokens(event: BurnThreePoolTokens): void {
   );
 }
 
-export function handleMintMetaPoolTokens<T>(event: T): void {
-  if ((event as unknown as MintMetaPoolTokens).params.amounts) {
-    const entity = createThreePoolAssetManagerEvent<ThreePoolAssetManagerMintMetaPoolTokensEvent>(
-      event as unknown as MintMetaPoolTokens,
-    );
-    entity.amounts = (event as unknown as MintMetaPoolTokens).params.amounts;
-    entity.mintedThreePoolTokens = (event as unknown as MintMetaPoolTokens).params.mintedThreePoolTokens;
-    entity.save();
-  } else if ((event as unknown as MintMetaPoolTokens1).params.asset) {
-    const entity = createThreePoolAssetManagerEvent<ThreePoolAssetManagerMintMetaPoolTokensEvent1>(
-      event as unknown as MintMetaPoolTokens1,
-    );
-    entity.asset = (event as unknown as MintMetaPoolTokens1).params.asset;
-    entity.amount = (event as unknown as MintMetaPoolTokens1).params.amount;
-    entity.minted = (event as unknown as MintMetaPoolTokens1).params.minted;
-    entity.save();
-  }
+export function handleMintMetaPoolTokens(event: MintMetaPoolTokens): void {
+  const entity = createThreePoolAssetManagerEvent<ThreePoolAssetManagerMintMetaPoolTokensEvent>(event);
+  entity.amounts = event.params.amounts;
+  entity.mintedThreePoolTokens = event.params.mintedThreePoolTokens;
+  entity.save();
+}
+
+export function handleMintMetaPoolTokens1(event: MintMetaPoolTokens1): void {
+  const entity = createThreePoolAssetManagerEvent<ThreePoolAssetManagerMintMetaPoolTokensEvent>(event);
+  entity.asset = event.params.asset;
+  entity.amount = event.params.amount;
+  entity.minted = event.params.minted;
+  entity.save();
 }
 
 export function handleBurnMetaPoolTokens(event: BurnMetaPoolTokens): void {

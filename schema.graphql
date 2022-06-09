@@ -1186,22 +1186,24 @@ type ThreePoolAssetManagerMintThreePoolTokensEvent implements Event @entity {
   timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
-  amounts: [BigInt!]!
-  mintedThreePoolTokens: BigInt!
+  amounts: [BigInt!]
+  asset: Int
+  amount: BigInt
+  mintedThreePoolTokens: BigInt
 }
 
-type ThreePoolAssetManagerMintThreePoolTokensEvent1 implements Event @entity {
-  id: ID!
-  cursor: BigInt!
-  index: BigInt!
-  block: Block!
-  timestamp: BigInt!
-  contract: Contract!
-  transaction: Transaction!
-  asset: Int!
-  amount: BigInt!
-  mintedThreePoolTokens: BigInt!
-}
+# type ThreePoolAssetManagerMintThreePoolTokensEvent1 implements Event @entity {
+#   id: ID!
+#   cursor: BigInt!
+#   index: BigInt!
+#   block: Block!
+#   timestamp: BigInt!
+#   contract: Contract!
+#   transaction: Transaction!
+#   asset: Int!
+#   amount: BigInt!
+#   mintedThreePoolTokens: BigInt!
+# }
 
 type ThreePoolAssetManagerBurnThreePoolTokensEvent implements Event @entity {
   id: ID!
@@ -1224,23 +1226,26 @@ type ThreePoolAssetManagerMintMetaPoolTokensEvent implements Event @entity {
   timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
-  amounts: [BigInt!]!
+  amounts: [BigInt!]
   # should be fixed to mintedMetaPoolTokens once contract is fixed
-  mintedThreePoolTokens: BigInt!
+  mintedThreePoolTokens: BigInt
+  asset: Int
+  amount: BigInt
+  minted: BigInt
 }
 
-type ThreePoolAssetManagerMintMetaPoolTokensEvent1 implements Event @entity {
-  id: ID!
-  cursor: BigInt!
-  index: BigInt!
-  block: Block!
-  timestamp: BigInt!
-  contract: Contract!
-  transaction: Transaction!
-  asset: Int!
-  amount: BigInt!
-  minted: BigInt!
-}
+# type ThreePoolAssetManagerMintMetaPoolTokensEvent1 implements Event @entity {
+#   id: ID!
+#   cursor: BigInt!
+#   index: BigInt!
+#   block: Block!
+#   timestamp: BigInt!
+#   contract: Contract!
+#   transaction: Transaction!
+#   asset: Int!
+#   amount: BigInt!
+#   minted: BigInt!
+# }
 
 type ThreePoolAssetManagerBurnMetaPoolTokensEvent implements Event @entity {
   id: ID!
