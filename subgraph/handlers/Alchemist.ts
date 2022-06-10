@@ -64,6 +64,10 @@ import {
   Withdraw,
   YieldTokenEnabled,
   CreditUnlockRateUpdated,
+  Harvest1,
+  Repay1,
+  Liquidate1,
+  Liquidate2,
 } from '../generated/AlchemistV2_alETH/Alchemist';
 import { ERC20 as ERC20Contract } from '../generated/AlchemistV2_alETH/ERC20';
 import {
@@ -175,7 +179,7 @@ export function handleDonate(event: Donate): void {
   getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
 }
 
-export function handleHarvest(event: Harvest): void {
+export function handleHarvest1(event: Harvest1): void {
   const entity = createAlchemistEvent<AlchemistHarvestEvent>(event);
   entity.minimumAmountOut = event.params.minimumAmountOut;
   entity.totalHarvested = event.params.totalHarvested;
@@ -267,7 +271,7 @@ export function handleProtocolFeeUpdated(event: ProtocolFeeUpdated): void {
   entity.save();
 }
 
-export function handleRepay(event: Repay): void {
+export function handleRepay1(event: Repay1): void {
   const entity = createAlchemistEvent<AlchemistRepayEvent>(event);
   entity.amount = event.params.amount;
   entity.recipient = event.params.recipient;
@@ -416,7 +420,7 @@ export function handleWithdraw(event: Withdraw): void {
   getOrCreateAlchemistTVLHistory(tvl, amountChange, underlyingValueChange, event);
 }
 
-export function handleLiquidate(event: Liquidate): void {
+export function handleLiquidate2(event: Liquidate2): void {
   const entity = createAlchemistEvent<AlchemistLiquidateEvent>(event);
   entity.owner = event.params.owner;
   entity.shares = event.params.shares;

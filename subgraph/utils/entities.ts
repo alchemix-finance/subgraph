@@ -21,6 +21,9 @@ import {
   ThreePoolAssetManagerMetaPoolTokenBalanceHistory,
   ThreePoolAssetManagerToken,
   RewardsHistory,
+  EthAssetManager,
+  EthAssetManagerToken,
+  EthAssetManagerMetaPoolTokenBalanceHistory,
 } from '../generated/schema';
 import { ERC20 as ERC20Contract } from '../generated/AlchemistV2_alUSD/ERC20';
 import { uniqueEventId, sortableEventCursor } from './id';
@@ -368,6 +371,75 @@ export function getOrCreateThreePoolAssetManagerMetaPoolTokenBalanceHistory(
 export function getOrCreateThreePoolAssetManagerRewardsHistory(
   curveState: ThreePoolAssetManagerToken,
   convexState: ThreePoolAssetManagerToken,
+  amountChangeCurve: BigInt,
+  amountChangeConvex: BigInt,
+  event: ethereum.Event,
+): RewardsHistory {
+  const eventId = uniqueEventId(event);
+  const id = curveState.id + '/' + convexState.id + '/' + eventId;
+  let entity = RewardsHistory.load(id);
+
+  if (!entity) {
+    entity = new RewardsHistory(id);
+    entity.transaction = event.transaction.hash.toHex();
+    entity.curveToken = curveState.id;
+    entity.convexToken = convexState.id;
+    entity.amountChangeCurve = amountChangeCurve;
+    entity.amountChangeConvex = amountChangeConvex;
+    entity.curveBalance = curveState.amount;
+    entity.convexBalance = convexState.amount;
+    entity.event = eventId;
+    entity.block = event.block.hash.toHex();
+    entity.timestamp = event.block.timestamp;
+  }
+
+  return entity;
+}
+
+export function getOrCreateEthAssetManagerTokenBalance(
+  ethAssetManager: EthAssetManager,
+  token: UnderlyingToken,
+): EthAssetManagerToken {
+  const id = ethAssetManager.id + '/' + token.id;
+  let entity = EthAssetManagerToken.load(id);
+
+  if (!entity) {
+    entity = new EthAssetManagerToken(id);
+    entity.token = token.id;
+    entity.amount = BigInt.fromI32(0);
+    entity.save();
+  }
+
+  return entity;
+}
+
+export function getOrCreateEthAssetManagerMetaPoolTokenBalanceHistory(
+  state: EthAssetManagerToken,
+  amountChange: BigInt,
+  event: ethereum.Event,
+): EthAssetManagerMetaPoolTokenBalanceHistory {
+  const eventId = uniqueEventId(event);
+  const id = state.id + '/' + eventId;
+  let entity = EthAssetManagerMetaPoolTokenBalanceHistory.load(id);
+
+  if (!entity) {
+    entity = new EthAssetManagerMetaPoolTokenBalanceHistory(id);
+    entity.transaction = event.transaction.hash.toHex();
+    entity.metaPoolToken = state.token;
+    entity.ethAssetManager = state.id;
+    entity.amountChange = amountChange;
+    entity.balance = state.amount;
+    entity.event = eventId;
+    entity.block = event.block.hash.toHex();
+    entity.timestamp = event.block.timestamp;
+  }
+
+  return entity;
+}
+
+export function getOrCreateEthAssetManagerRewardsHistory(
+  curveState: EthAssetManagerToken,
+  convexState: EthAssetManagerToken,
   amountChangeCurve: BigInt,
   amountChangeConvex: BigInt,
   event: ethereum.Event,
