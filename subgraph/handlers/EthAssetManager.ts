@@ -1,5 +1,6 @@
 import { Address, Entity, ethereum, BigInt } from '@graphprotocol/graph-ts';
 import {
+  AdminUpdated,
   BurnMetaPoolTokens,
   ClaimRewards,
   DepositMetaPoolTokens,
@@ -15,6 +16,7 @@ import {
 } from '../generated/EthAssetManager/EthAssetManager';
 import {
   EthAssetManager,
+  EthAssetManagerAdminUpdatedEvent,
   EthAssetManagerBurnMetaPoolTokensEvent,
   EthAssetManagerClaimRewardsEvent,
   EthAssetManagerDepositMetaPoolTokensEvent,
@@ -53,6 +55,12 @@ function createEthAssetManagerEvent<TEvent extends Entity>(event: ethereum.Event
   entity.setString('contract', contract.id);
 
   return entity;
+}
+
+export function handleAdminUpdated(event: AdminUpdated): void {
+  const entity = createEthAssetManagerEvent<EthAssetManagerAdminUpdatedEvent>(event);
+  entity.admin = event.params.admin;
+  entity.save();
 }
 
 export function handlePendingAdminUpdated(event: PendingAdminUpdated): void {
