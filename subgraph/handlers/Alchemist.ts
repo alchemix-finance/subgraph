@@ -179,6 +179,20 @@ export function handleDonate(event: Donate): void {
   getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
 }
 
+export function handleHarvest(event: Harvest): void {
+  const entity = createAlchemistEvent<AlchemistHarvestEvent>(event);
+  entity.minimumAmountOut = event.params.minimumAmountOut;
+  entity.totalHarvested = event.params.totalHarvested;
+  entity.yieldToken = event.params.yieldToken;
+  entity.save();
+
+  let alchemist = getOrCreateAlchemist(event);
+  let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
+  alchDebt.save();
+
+  getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
+}
+
 export function handleHarvest1(event: Harvest1): void {
   const entity = createAlchemistEvent<AlchemistHarvestEvent>(event);
   entity.minimumAmountOut = event.params.minimumAmountOut;
