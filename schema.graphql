@@ -4,6 +4,7 @@
 
 type Account @entity {
   id: ID!
+  debt: BigInt!
   alchemistBalances: [AlchemistBalance!]! @derivedFrom(field: "account")
   alchemistActivity: [AlchemistBalanceHistory!]! @derivedFrom(field: "account")
   transmuterBalances: [TransmuterBalance!]! @derivedFrom(field: "account")
@@ -133,6 +134,7 @@ interface Contract {
 
 type Alchemist implements Contract @entity {
   id: ID!
+  accounts: [Account!]!
   debtToken: DebtToken!
   globalDebt: AlchemistGlobalDebt!
   globalDebtHistory: [AlchemistGlobalDebtHistory!] @derivedFrom(field: "alchemist")

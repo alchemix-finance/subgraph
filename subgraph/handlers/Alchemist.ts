@@ -181,6 +181,9 @@ export function handleDonate(event: Donate): void {
 
 export function handleHarvest(event: Harvest): void {
   const entity = createAlchemistEvent<AlchemistHarvestEvent>(event);
+  const account = getOrCreateAccount(event.transaction.from);
+  const accountDebt = account.debt;
+
   entity.minimumAmountOut = event.params.minimumAmountOut;
   entity.totalHarvested = event.params.totalHarvested;
   entity.yieldToken = event.params.yieldToken;
@@ -188,6 +191,8 @@ export function handleHarvest(event: Harvest): void {
 
   let alchemist = getOrCreateAlchemist(event);
   let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
+  let newTotalDebt = alchDebt.debt.minus(accountDebt);
+  alchDebt.debt = newTotalDebt;
   alchDebt.save();
 
   getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
@@ -283,6 +288,26 @@ export function handleProtocolFeeUpdated(event: ProtocolFeeUpdated): void {
   const entity = createAlchemistEvent<AlchemistProtocolFeeUpdatedEvent>(event);
   entity.protocolFee = event.params.protocolFee;
   entity.save();
+}
+
+export function handleRepay(event: Repay): void {
+  const entity = createAlchemistEvent<AlchemistRepayEvent>(event);
+  const account = getOrCreateAccount(event.transaction.from);
+  const accountDebt = account.debt;
+
+  entity.amount = event.params.amount;
+  entity.recipient = event.params.recipient;
+  entity.sender = event.params.sender;
+  entity.underlyingToken = event.params.underlyingToken;
+  entity.save();
+
+  let alchemist = getOrCreateAlchemist(event);
+  let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
+  let newTotalDebt = alchDebt.debt.minus(accountDebt);
+  alchDebt.debt = newTotalDebt;
+  alchDebt.save();
+
+  getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
 }
 
 export function handleRepay1(event: Repay1): void {
@@ -432,6 +457,97 @@ export function handleWithdraw(event: Withdraw): void {
   tvl.save();
 
   getOrCreateAlchemistTVLHistory(tvl, amountChange, underlyingValueChange, event);
+}
+
+export function handleLiquidate(event: Liquidate): void {
+  const entity = createAlchemistEvent<AlchemistLiquidateEvent>(event);
+  entity.owner = event.params.owner;
+  entity.shares = event.params.shares;
+  entity.yieldToken = event.params.yieldToken;
+  entity.save();
+
+  const alchemistContract = AlchemistContract.bind(event.address);
+  const alchemist = getOrCreateAlchemist(event);
+  const account = getOrCreateAccount(event.params.owner);
+  const yieldToken = getOrCreateYieldToken(event.params.yieldToken);
+  const deposit = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
+  const accountDebt = account.debt;
+  deposit.shares = deposit.shares.minus(event.params.shares);
+  const pps = alchemistContract.getUnderlyingTokensPerShare(event.params.yieldToken);
+  deposit.underlyingValue = deposit.shares.times(pps);
+  deposit.save();
+
+  const change = event.params.shares.times(BigInt.fromI32(-1));
+  getOrCreateAlchemistBalanceHistory(deposit, change, event);
+
+  const yieldTokenContract = ERC20Contract.bind(event.params.yieldToken);
+  const yieldTokenBalance = yieldTokenContract.balanceOf(event.address);
+  const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
+  const totalUnderlyingValue = yieldTokenParams.totalShares
+    .times(pps)
+    .div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));
+  const tvl = getOrCreateAlchemistTVL(alchemist, yieldToken, yieldTokenBalance, totalUnderlyingValue);
+  const amountChange = tvl.amount.minus(yieldTokenBalance);
+  const underlyingValueChange = tvl.underlyingValue.minus(totalUnderlyingValue);
+
+  tvl.amount = yieldTokenBalance;
+  tvl.underlyingValue = totalUnderlyingValue;
+  tvl.save();
+
+  getOrCreateAlchemistTVLHistory(tvl, amountChange, underlyingValueChange, event);
+
+  let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
+  let newTotalDebt = alchDebt.debt.minus(accountDebt);
+  alchDebt.debt = newTotalDebt;
+  alchDebt.save();
+
+  getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
+}
+
+export function handleLiquidate1(event: Liquidate1): void {
+  const entity = createAlchemistEvent<AlchemistLiquidateEvent>(event);
+  entity.owner = event.params.owner;
+  entity.shares = event.params.shares;
+  entity.yieldToken = event.params.yieldToken;
+  entity.underlyingToken = event.params.underlyingToken;
+  entity.save();
+
+  const alchemistContract = AlchemistContract.bind(event.address);
+  const alchemist = getOrCreateAlchemist(event);
+  const account = getOrCreateAccount(event.params.owner);
+  const yieldToken = getOrCreateYieldToken(event.params.yieldToken);
+  const deposit = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
+  const accountDebt = account.debt;
+  deposit.shares = deposit.shares.minus(event.params.shares);
+  const pps = alchemistContract.getUnderlyingTokensPerShare(event.params.yieldToken);
+  deposit.underlyingValue = deposit.shares.times(pps);
+  deposit.save();
+
+  const change = event.params.shares.times(BigInt.fromI32(-1));
+  getOrCreateAlchemistBalanceHistory(deposit, change, event);
+
+  const yieldTokenContract = ERC20Contract.bind(event.params.yieldToken);
+  const yieldTokenBalance = yieldTokenContract.balanceOf(event.address);
+  const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
+  const totalUnderlyingValue = yieldTokenParams.totalShares
+    .times(pps)
+    .div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));
+  const tvl = getOrCreateAlchemistTVL(alchemist, yieldToken, yieldTokenBalance, totalUnderlyingValue);
+  const amountChange = tvl.amount.minus(yieldTokenBalance);
+  const underlyingValueChange = tvl.underlyingValue.minus(totalUnderlyingValue);
+
+  tvl.amount = yieldTokenBalance;
+  tvl.underlyingValue = totalUnderlyingValue;
+  tvl.save();
+
+  getOrCreateAlchemistTVLHistory(tvl, amountChange, underlyingValueChange, event);
+
+  let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
+  let newTotalDebt = alchDebt.debt.minus(accountDebt);
+  alchDebt.debt = newTotalDebt;
+  alchDebt.save();
+
+  getOrCreateAlchemistGlobalDebtHistory(alchDebt, event);
 }
 
 export function handleLiquidate2(event: Liquidate2): void {
