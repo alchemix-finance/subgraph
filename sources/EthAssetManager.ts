@@ -3,10 +3,10 @@ import { eventDeclarations, deploymentAddress } from './utils/abis';
 import { networkName, startBlockNumber } from './utils/constants';
 import { DataSource } from './utils/types';
 
-const TransmuterInterface = new utils.Interface(require('../abis/Transmuter.json'));
-const TransmuterEvents = Object.values(TransmuterInterface.events);
+const EthAssetManagerInterface = new utils.Interface(require('../abis/EthAssetManager.json'));
+const EthAssetManagerEvents = Object.values(EthAssetManagerInterface.events);
 
-export function createTransmuter(
+export function createEthAssetManager(
   name: string,
   block: number = startBlockNumber,
   address: string = deploymentAddress(name),
@@ -19,13 +19,13 @@ export function createTransmuter(
       apiVersion: '0.0.6',
       kind: 'ethereum/events',
       language: 'wasm/assemblyscript',
-      file: 'subgraph/handlers/Transmuter.ts',
+      file: 'subgraph/handlers/EthAssetManager.ts',
       entities: [],
-      eventHandlers: eventDeclarations(TransmuterEvents),
+      eventHandlers: eventDeclarations(EthAssetManagerEvents),
       abis: [
         {
-          name: 'Transmuter',
-          file: 'abis/Transmuter.json',
+          name: 'EthAssetManager',
+          file: 'abis/EthAssetManager.json',
         },
         {
           name: 'ERC20',
@@ -34,7 +34,7 @@ export function createTransmuter(
       ],
     },
     source: {
-      abi: 'Transmuter',
+      abi: 'EthAssetManager',
       address,
       startBlock: block,
     },

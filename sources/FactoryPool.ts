@@ -1,5 +1,5 @@
 import { utils } from 'ethers';
-import { eventDeclaration, deploymentAddress } from './utils/abis';
+import { eventDeclarations } from './utils/abis';
 import { networkName } from './utils/constants';
 import { DataSource } from './utils/types';
 
@@ -17,7 +17,7 @@ export function createFactoryPool(name: string, block: number, address: string):
       language: 'wasm/assemblyscript',
       file: 'subgraph/handlers/FactoryPool.ts',
       entities: [],
-      eventHandlers: FactoryPoolEvents.map((fragment) => eventDeclaration(fragment)),
+      eventHandlers: eventDeclarations(FactoryPoolEvents),
       abis: [
         {
           name: 'FactoryPool',

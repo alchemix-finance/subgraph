@@ -1,4 +1,4 @@
 
 [submodule "mainnet_deployment"]
 	path = v2-contracts
-	url = git@github.com:alchemix-finance/v2-contracts.git
+	url = https://github.com/alchemix-finance/v2-contracts

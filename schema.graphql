@@ -4,6 +4,7 @@
 
 type Account @entity {
   id: ID!
+  debt: BigInt!
   alchemistBalances: [AlchemistBalance!]! @derivedFrom(field: "account")
   alchemistActivity: [AlchemistBalanceHistory!]! @derivedFrom(field: "account")
   transmuterBalances: [TransmuterBalance!]! @derivedFrom(field: "account")
@@ -82,6 +83,13 @@ type DebtToken @entity {
   symbol: String!
 }
 
+type LpToken @entity {
+  id: ID!
+  decimals: BigInt!
+  name: String!
+  symbol: String!
+}
+
 ###############################################################################
 # GENERIC
 ###############################################################################
@@ -126,6 +134,7 @@ interface Contract {
 
 type Alchemist implements Contract @entity {
   id: ID!
+  accounts: [Account!]!
   debtToken: DebtToken!
   globalDebt: AlchemistGlobalDebt!
   globalDebtHistory: [AlchemistGlobalDebtHistory!] @derivedFrom(field: "alchemist")
@@ -293,9 +302,10 @@ type AlchemistHarvestEvent implements Event @entity {
   timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
-  yieldToken: Bytes!
-  minimumAmountOut: BigInt!
-  totalHarvested: BigInt!
+  yieldToken: Bytes
+  minimumAmountOut: BigInt
+  totalHarvested: BigInt
+  credit: BigInt
 }
 
 type AlchemistKeeperSetEvent implements Event @entity {
@@ -318,10 +328,11 @@ type AlchemistLiquidateEvent implements Event @entity {
   timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
-  owner: Bytes!
-  shares: BigInt!
-  yieldToken: Bytes!
-  underlyingToken: Bytes!
+  owner: Bytes
+  shares: BigInt
+  yieldToken: Bytes
+  underlyingToken: Bytes
+  credit: BigInt
 }
 
 type AlchemistLiquidationLimitUpdatedEvent implements Event @entity {
@@ -438,10 +449,11 @@ type AlchemistRepayEvent implements Event @entity {
   timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
-  amount: BigInt!
-  recipient: Bytes!
-  sender: Bytes!
-  underlyingToken: Bytes!
+  amount: BigInt
+  recipient: Bytes
+  sender: Bytes
+  underlyingToken: Bytes
+  credit: BigInt
 }
 
 type AlchemistRepayLimitUpdatedEvent implements Event @entity {
@@ -847,7 +859,6 @@ type TransmuterBufferSetDivertToAmoEvent implements Event @entity {
   divert: Boolean!
 }
 
-
 ###############################################################################
 # CURVE
 ###############################################################################
@@ -1021,4 +1032,473 @@ type PoolHistoricalRate @entity {
   timestamp: BigInt!
   block: Block!
   txIdx: BigInt!
+}
+
+###############################################################################
+# ThreePoolAssetManager
+###############################################################################
+
+type ThreePoolAssetManager implements Contract @entity {
+  id: ID!
+  threePoolTokens: [UnderlyingToken!]!
+  metaPoolTokens: [UnderlyingToken!]!
+  curveTokenBalance: ThreePoolAssetManagerToken!
+  convexTokenBalance: ThreePoolAssetManagerToken!
+  threePoolTokenBalance: [ThreePoolAssetManagerToken!]!
+  metaPoolTokenBalance: [ThreePoolAssetManagerToken!]!
+  threePoolTokenActivity: [ThreePoolAssetManagerThreePoolTokenBalanceHistory!]!
+    @derivedFrom(field: "threePoolAssetManager")
+  metaPoolTokenActivity: [ThreePoolAssetManagerMetaPoolTokenBalanceHistory!]!
+    @derivedFrom(field: "threePoolAssetManager")
+  rewardsActivity: [RewardsHistory!]! @derivedFrom(field: "threePoolAssetManager")
+  claimableRewards: ClaimableRewards!
+  events: [Event!]! @derivedFrom(field: "contract")
+}
+
+type ThreePoolAssetManagerToken @entity {
+  id: ID!
+  token: UnderlyingToken!
+  amount: BigInt!
+}
+
+type ClaimableRewards @entity {
+  id: ID!
+  amountCurve: BigInt!
+  amountConvex: BigInt!
+}
+
+type RewardsHistory @entity {
+  id: ID!
+  transaction: Transaction!
+  curveToken: UnderlyingToken!
+  convexToken: UnderlyingToken!
+  threePoolAssetManager: ThreePoolAssetManager!
+  amountChangeCurve: BigInt!
+  amountChangeConvex: BigInt!
+  curveBalance: BigInt!
+  convexBalance: BigInt!
+  event: Event!
+  block: Block!
+  timestamp: BigInt!
+}
+
+type ThreePoolAssetManagerThreePoolTokenBalanceHistory @entity {
+  id: ID!
+  transaction: Transaction!
+  threePoolToken: UnderlyingToken!
+  threePoolAssetManager: ThreePoolAssetManager!
+  amountChange: BigInt!
+  balance: BigInt!
+  event: Event!
+  block: Block!
+  timestamp: BigInt!
+}
+
+type ThreePoolAssetManagerMetaPoolTokenBalanceHistory @entity {
+  id: ID!
+  transaction: Transaction!
+  metaPoolToken: UnderlyingToken!
+  threePoolAssetManager: ThreePoolAssetManager!
+  amountChange: BigInt!
+  balance: BigInt!
+  event: Event!
+  block: Block!
+  timestamp: BigInt!
+}
+
+type ThreePoolAssetManagerAdminUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  admin: Bytes!
+}
+
+type ThreePoolAssetManagerPendingAdminUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  pendingAdmin: Bytes!
+}
+
+type ThreePoolAssetManagerOperatorUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  operator: Bytes!
+}
+
+type ThreePoolAssetManagerRewardReceiverUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  rewardReceiver: Bytes!
+}
+
+type ThreePoolAssetManagerTransmuterBufferUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  transmuterBuffer: Bytes!
+}
+
+type ThreePoolAssetManagerThreePoolSlippageUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  threePoolSlippage: BigInt!
+}
+
+type ThreePoolAssetManagerMetaPoolSlippageUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  metaPoolSlippage: BigInt!
+}
+
+type ThreePoolAssetManagerMintThreePoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amounts: [BigInt!]
+  asset: Int
+  amount: BigInt
+  mintedThreePoolTokens: BigInt
+}
+
+type ThreePoolAssetManagerBurnThreePoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  asset: Int!
+  amount: BigInt!
+  withdrawn: BigInt!
+}
+
+type ThreePoolAssetManagerMintMetaPoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amounts: [BigInt!]
+  # should be fixed to mintedMetaPoolTokens once contract is fixed
+  mintedThreePoolTokens: BigInt
+  asset: Int
+  amount: BigInt
+  minted: BigInt
+}
+
+type ThreePoolAssetManagerBurnMetaPoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  asset: Int!
+  amount: BigInt!
+  withdrawn: BigInt!
+}
+
+type ThreePoolAssetManagerDepositMetaPoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  success: Boolean!
+}
+
+type ThreePoolAssetManagerWithdrawMetaPoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  success: Boolean!
+}
+
+type ThreePoolAssetManagerClaimRewardsEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  success: Boolean!
+  amountCurve: BigInt!
+  amountConvex: BigInt!
+}
+
+type ThreePoolAssetManagerReclaimThreePoolAssetEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  asset: Int!
+  amount: BigInt!
+}
+
+###############################################################################
+# EthAssetManager
+###############################################################################
+
+type EthAssetManager implements Contract @entity {
+  id: ID!
+  metaPoolTokens: [UnderlyingToken!]!
+  curveTokenBalance: EthAssetManagerToken!
+  convexTokenBalance: EthAssetManagerToken!
+  metaPoolTokenBalance: [EthAssetManagerToken!]!
+  metaPoolTokenActivity: [EthAssetManagerMetaPoolTokenBalanceHistory!]! @derivedFrom(field: "ethAssetManager")
+  rewardsActivity: [EthAssetManagerRewardsHistory!]! @derivedFrom(field: "ethAssetManager")
+  claimableRewards: ClaimableRewards!
+  events: [Event!]! @derivedFrom(field: "contract")
+}
+
+type EthAssetManagerToken @entity {
+  id: ID!
+  token: UnderlyingToken!
+  amount: BigInt!
+}
+
+type EthAssetManagerRewardsHistory @entity {
+  id: ID!
+  transaction: Transaction!
+  curveToken: UnderlyingToken!
+  convexToken: UnderlyingToken!
+  ethAssetManager: EthAssetManager!
+  amountChangeCurve: BigInt!
+  amountChangeConvex: BigInt!
+  curveBalance: BigInt!
+  convexBalance: BigInt!
+  event: Event!
+  block: Block!
+  timestamp: BigInt!
+}
+
+type EthAssetManagerMetaPoolTokenBalanceHistory @entity {
+  id: ID!
+  transaction: Transaction!
+  metaPoolToken: UnderlyingToken!
+  ethAssetManager: EthAssetManager!
+  amountChange: BigInt!
+  balance: BigInt!
+  event: Event!
+  block: Block!
+  timestamp: BigInt!
+}
+
+type EthAssetManagerAdminUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  admin: Bytes!
+}
+
+type EthAssetManagerPendingAdminUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  pendingAdmin: Bytes!
+}
+
+type EthAssetManagerOperatorUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  operator: Bytes!
+}
+
+type EthAssetManagerRewardReceiverUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  rewardReceiver: Bytes!
+}
+
+type EthAssetManagerTransmuterBufferUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  transmuterBuffer: Bytes!
+}
+
+type EthAssetManagerMetaPoolSlippageUpdatedEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  metaPoolSlippage: BigInt!
+}
+
+type EthAssetManagerMintMetaPoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amounts: [BigInt!]
+  # should be fixed to mintedMetaPoolTokens once contract is fixed
+  mintedThreePoolTokens: BigInt
+  asset: Int
+  amount: BigInt
+  minted: BigInt
+}
+
+type EthAssetManagerBurnMetaPoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  asset: Int!
+  amount: BigInt!
+  withdrawn: BigInt!
+}
+
+type EthAssetManagerDepositMetaPoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  success: Boolean!
+}
+
+type EthAssetManagerWithdrawMetaPoolTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  success: Boolean!
+}
+
+type EthAssetManagerClaimRewardsEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  success: Boolean!
+  amountCurve: BigInt!
+  amountConvex: BigInt!
+}
+
+type EthAssetManagerReclaimEthEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+}
+
+type EthAssetManagerSweepTokenEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  token: Bytes!
+  amount: BigInt!
+}
+
+type EthAssetManagerSweepEthEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
 }
