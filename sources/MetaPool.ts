@@ -6,7 +6,7 @@ import { DataSource } from './utils/types';
 const MetaPoolInterface = new utils.Interface(require('../abis/MetaPool.json'));
 const MetaPoolEvents = Object.values(MetaPoolInterface.events);
 
-export function createMetaPool(name: string, block: number, address: string): DataSource {
+export function createMetaPool(name: string, address: string, block: number): DataSource {
   return {
     name,
     network: networkName,

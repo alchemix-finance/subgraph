@@ -68,8 +68,8 @@ import {
   Repay1,
   Liquidate1,
   Liquidate2,
-} from '../generated/AlchemistV2_alETH/Alchemist';
-import { ERC20 as ERC20Contract } from '../generated/AlchemistV2_alETH/ERC20';
+} from '../generated/AlchemistV2_alUSD/Alchemist';
+import { ERC20 as ERC20Contract } from '../generated/AlchemistV2_alUSD/ERC20';
 import {
   createEvent,
   getOrCreateAccount,

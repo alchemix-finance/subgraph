@@ -38,5 +38,5 @@ export function eventDeclarations(input: Event[]) {
 }
 
 export function deploymentAddress(artifact: string): string {
-  return require(`../../v2-contracts/deployments/mainnet/${artifact}.json`).address;
+  return require(`../../v2-contracts/deployments/${process.env.NETWORK_NAME}/${artifact}.json`).address;
 }

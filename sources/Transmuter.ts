@@ -8,8 +8,8 @@ const TransmuterEvents = Object.values(TransmuterInterface.events);
 
 export function createTransmuter(
   name: string,
-  block: number = startBlockNumber,
   address: string = deploymentAddress(name),
+  block: number = startBlockNumber,
 ): DataSource {
   return {
     name,
