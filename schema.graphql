@@ -156,6 +156,7 @@ type AlchemistGlobalDebtHistory @entity {
   debt: BigInt!
   transaction: Transaction!
   block: Block!
+  timestamp: BigInt!
 }
 
 type AlchemistTVL @entity {
