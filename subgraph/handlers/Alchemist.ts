@@ -193,7 +193,10 @@ export function handleHarvest(event: Harvest): void {
   let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
   const ytp = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
   const utp = alchemistContract.getUnderlyingTokenParameters(ytp.underlyingToken);
-  let credit = event.params.totalHarvested.times(utp.conversionFactor);
+  const protocolFee = alchemistContract.protocolFee();
+  const bps = alchemistContract.BPS();
+  let fee = event.params.totalHarvested.times(protocolFee).div(bps);
+  let credit = event.params.totalHarvested.minus(fee).times(utp.conversionFactor);
   let newTotalDebt = alchDebt.debt.minus(credit);
   alchDebt.debt = newTotalDebt;
   alchDebt.save();
