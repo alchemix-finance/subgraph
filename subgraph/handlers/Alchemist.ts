@@ -181,8 +181,8 @@ export function handleDonate(event: Donate): void {
 
 export function handleHarvest(event: Harvest): void {
   const entity = createAlchemistEvent<AlchemistHarvestEvent>(event);
-  const account = getOrCreateAccount(event.transaction.from);
-  const accountDebt = account.debt;
+
+  const alchemistContract = AlchemistContract.bind(event.address);
 
   entity.minimumAmountOut = event.params.minimumAmountOut;
   entity.totalHarvested = event.params.totalHarvested;
@@ -191,7 +191,13 @@ export function handleHarvest(event: Harvest): void {
 
   let alchemist = getOrCreateAlchemist(event);
   let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
-  let newTotalDebt = alchDebt.debt.minus(accountDebt);
+  const ytp = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
+  const utp = alchemistContract.getUnderlyingTokenParameters(ytp.underlyingToken);
+  const protocolFee = alchemistContract.protocolFee();
+  const bps = alchemistContract.BPS();
+  let fee = event.params.totalHarvested.times(protocolFee).div(bps);
+  let credit = event.params.totalHarvested.minus(fee).times(utp.conversionFactor);
+  let newTotalDebt = alchDebt.debt.minus(credit);
   alchDebt.debt = newTotalDebt;
   alchDebt.save();
 
