@@ -475,8 +475,7 @@ export function handleLiquidate(event: Liquidate): void {
   const account = getOrCreateAccount(event.params.owner);
   const yieldToken = getOrCreateYieldToken(event.params.yieldToken);
   const deposit = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
-  const position = alchemistContract.positions(event.params.owner, event.params.yieldToken);
-  deposit.shares = position.value0;
+  deposit.shares = deposit.shares.minus(event.params.shares);
   const pps = alchemistContract.getUnderlyingTokensPerShare(event.params.yieldToken);
   deposit.underlyingValue = deposit.shares.times(pps).div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));
   deposit.save();
@@ -526,8 +525,7 @@ export function handleLiquidate1(event: Liquidate1): void {
   const account = getOrCreateAccount(event.params.owner);
   const yieldToken = getOrCreateYieldToken(event.params.yieldToken);
   const deposit = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
-  const position = alchemistContract.positions(event.params.owner, event.params.yieldToken);
-  deposit.shares = position.value0;
+  deposit.shares = deposit.shares.minus(event.params.shares);
   const pps = alchemistContract.getUnderlyingTokensPerShare(event.params.yieldToken);
   deposit.underlyingValue = deposit.shares.times(pps).div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));
   deposit.save();
@@ -577,8 +575,7 @@ export function handleLiquidate2(event: Liquidate2): void {
   const account = getOrCreateAccount(event.params.owner);
   const yieldToken = getOrCreateYieldToken(event.params.yieldToken);
   const deposit = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
-  const position = alchemistContract.positions(event.params.owner, event.params.yieldToken);
-  deposit.shares = position.value0;
+  deposit.shares = deposit.shares.minus(event.params.shares);
   const pps = alchemistContract.getUnderlyingTokensPerShare(event.params.yieldToken);
   deposit.underlyingValue = deposit.shares.times(pps).div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));
   deposit.save();
