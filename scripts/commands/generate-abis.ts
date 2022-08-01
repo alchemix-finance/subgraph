@@ -28,9 +28,9 @@ const legacy: Record<string, utils.Interface> = {
 
 async function getAbis() {
   const artifacts = {
-    Alchemist: path.resolve(packageRoot, 'v2-contracts/deployments/mainnet/AlchemistV2_alETH.json'),
-    Transmuter: path.resolve(packageRoot, 'v2-contracts/deployments/mainnet/TransmuterV2_ETH.json'),
-    TransmuterBuffer: path.resolve(packageRoot, 'v2-contracts/deployments/mainnet/TransmuterBuffer_alETH.json'),
+    Alchemist: path.resolve(packageRoot, 'v2-contracts/deployments/mainnet/AlchemistV2_alUSD.json'),
+    Transmuter: path.resolve(packageRoot, 'v2-contracts/deployments/mainnet/TransmuterV2_DAI.json'),
+    TransmuterBuffer: path.resolve(packageRoot, 'v2-contracts/deployments/mainnet/TransmuterBuffer_alUSD.json'),
   } as const;
 
   const contents = await Promise.all(

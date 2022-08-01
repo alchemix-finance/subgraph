@@ -68,8 +68,8 @@ import {
   Repay1,
   Liquidate1,
   Liquidate2,
-} from '../generated/AlchemistV2_alETH/Alchemist';
-import { ERC20 as ERC20Contract } from '../generated/AlchemistV2_alETH/ERC20';
+} from '../generated/AlchemistV2_alUSD/Alchemist';
+import { ERC20 as ERC20Contract } from '../generated/AlchemistV2_alUSD/ERC20';
 import {
   createEvent,
   getOrCreateAccount,
@@ -181,8 +181,8 @@ export function handleDonate(event: Donate): void {
 
 export function handleHarvest(event: Harvest): void {
   const entity = createAlchemistEvent<AlchemistHarvestEvent>(event);
-  const account = getOrCreateAccount(event.transaction.from);
-  const accountDebt = account.debt;
+
+  const alchemistContract = AlchemistContract.bind(event.address);
 
   entity.minimumAmountOut = event.params.minimumAmountOut;
   entity.totalHarvested = event.params.totalHarvested;
@@ -191,7 +191,13 @@ export function handleHarvest(event: Harvest): void {
 
   let alchemist = getOrCreateAlchemist(event);
   let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
-  let newTotalDebt = alchDebt.debt.minus(accountDebt);
+  const ytp = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
+  const utp = alchemistContract.getUnderlyingTokenParameters(ytp.underlyingToken);
+  const protocolFee = alchemistContract.protocolFee();
+  const bps = alchemistContract.BPS();
+  let fee = event.params.totalHarvested.times(protocolFee).div(bps);
+  let credit = event.params.totalHarvested.minus(fee).times(utp.conversionFactor);
+  let newTotalDebt = alchDebt.debt.minus(credit);
   alchDebt.debt = newTotalDebt;
   alchDebt.save();
 
@@ -293,7 +299,6 @@ export function handleProtocolFeeUpdated(event: ProtocolFeeUpdated): void {
 export function handleRepay(event: Repay): void {
   const entity = createAlchemistEvent<AlchemistRepayEvent>(event);
   const account = getOrCreateAccount(event.transaction.from);
-  const accountDebt = account.debt;
 
   entity.amount = event.params.amount;
   entity.recipient = event.params.recipient;
@@ -303,7 +308,10 @@ export function handleRepay(event: Repay): void {
 
   let alchemist = getOrCreateAlchemist(event);
   let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
-  let newTotalDebt = alchDebt.debt.minus(accountDebt);
+  const alchemistContract = AlchemistContract.bind(event.address);
+  let utp = alchemistContract.getUnderlyingTokenParameters(event.params.underlyingToken);
+  let credit = event.params.amount.times(utp.conversionFactor);
+  let newTotalDebt = alchDebt.debt.minus(credit);
   alchDebt.debt = newTotalDebt;
   alchDebt.save();
 
@@ -316,6 +324,7 @@ export function handleRepay1(event: Repay1): void {
   entity.recipient = event.params.recipient;
   entity.sender = event.params.sender;
   entity.underlyingToken = event.params.underlyingToken;
+  entity.credit = event.params.credit;
   entity.save();
 
   let alchemist = getOrCreateAlchemist(event);
@@ -467,14 +476,14 @@ export function handleLiquidate(event: Liquidate): void {
   entity.save();
 
   const alchemistContract = AlchemistContract.bind(event.address);
+  const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
   const alchemist = getOrCreateAlchemist(event);
   const account = getOrCreateAccount(event.params.owner);
   const yieldToken = getOrCreateYieldToken(event.params.yieldToken);
   const deposit = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
-  const accountDebt = account.debt;
   deposit.shares = deposit.shares.minus(event.params.shares);
   const pps = alchemistContract.getUnderlyingTokensPerShare(event.params.yieldToken);
-  deposit.underlyingValue = deposit.shares.times(pps);
+  deposit.underlyingValue = deposit.shares.times(pps).div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));
   deposit.save();
 
   const change = event.params.shares.times(BigInt.fromI32(-1));
@@ -482,7 +491,6 @@ export function handleLiquidate(event: Liquidate): void {
 
   const yieldTokenContract = ERC20Contract.bind(event.params.yieldToken);
   const yieldTokenBalance = yieldTokenContract.balanceOf(event.address);
-  const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
   const totalUnderlyingValue = yieldTokenParams.totalShares
     .times(pps)
     .div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));
@@ -497,7 +505,12 @@ export function handleLiquidate(event: Liquidate): void {
   getOrCreateAlchemistTVLHistory(tvl, amountChange, underlyingValueChange, event);
 
   let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
-  let newTotalDebt = alchDebt.debt.minus(accountDebt);
+  let utp = alchemistContract.getUnderlyingTokenParameters(yieldTokenParams.underlyingToken);
+  let credit = event.params.shares
+    .times(pps)
+    .div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8))
+    .times(utp.conversionFactor);
+  let newTotalDebt = alchDebt.debt.minus(credit);
   alchDebt.debt = newTotalDebt;
   alchDebt.save();
 
@@ -513,14 +526,14 @@ export function handleLiquidate1(event: Liquidate1): void {
   entity.save();
 
   const alchemistContract = AlchemistContract.bind(event.address);
+  const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
   const alchemist = getOrCreateAlchemist(event);
   const account = getOrCreateAccount(event.params.owner);
   const yieldToken = getOrCreateYieldToken(event.params.yieldToken);
   const deposit = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
-  const accountDebt = account.debt;
   deposit.shares = deposit.shares.minus(event.params.shares);
   const pps = alchemistContract.getUnderlyingTokensPerShare(event.params.yieldToken);
-  deposit.underlyingValue = deposit.shares.times(pps);
+  deposit.underlyingValue = deposit.shares.times(pps).div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));
   deposit.save();
 
   const change = event.params.shares.times(BigInt.fromI32(-1));
@@ -528,7 +541,6 @@ export function handleLiquidate1(event: Liquidate1): void {
 
   const yieldTokenContract = ERC20Contract.bind(event.params.yieldToken);
   const yieldTokenBalance = yieldTokenContract.balanceOf(event.address);
-  const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
   const totalUnderlyingValue = yieldTokenParams.totalShares
     .times(pps)
     .div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));
@@ -543,7 +555,12 @@ export function handleLiquidate1(event: Liquidate1): void {
   getOrCreateAlchemistTVLHistory(tvl, amountChange, underlyingValueChange, event);
 
   let alchDebt = getOrCreateAlchemistGlobalDebt(alchemist);
-  let newTotalDebt = alchDebt.debt.minus(accountDebt);
+  let utp = alchemistContract.getUnderlyingTokenParameters(yieldTokenParams.underlyingToken);
+  let credit = event.params.shares
+    .times(pps)
+    .div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8))
+    .times(utp.conversionFactor);
+  let newTotalDebt = alchDebt.debt.minus(credit);
   alchDebt.debt = newTotalDebt;
   alchDebt.save();
 
@@ -559,13 +576,14 @@ export function handleLiquidate2(event: Liquidate2): void {
   entity.save();
 
   const alchemistContract = AlchemistContract.bind(event.address);
+  const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
   const alchemist = getOrCreateAlchemist(event);
   const account = getOrCreateAccount(event.params.owner);
   const yieldToken = getOrCreateYieldToken(event.params.yieldToken);
   const deposit = getOrCreateAlchemistBalance(account, alchemist, yieldToken);
   deposit.shares = deposit.shares.minus(event.params.shares);
   const pps = alchemistContract.getUnderlyingTokensPerShare(event.params.yieldToken);
-  deposit.underlyingValue = deposit.shares.times(pps);
+  deposit.underlyingValue = deposit.shares.times(pps).div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));
   deposit.save();
 
   const change = event.params.shares.times(BigInt.fromI32(-1));
@@ -573,7 +591,6 @@ export function handleLiquidate2(event: Liquidate2): void {
 
   const yieldTokenContract = ERC20Contract.bind(event.params.yieldToken);
   const yieldTokenBalance = yieldTokenContract.balanceOf(event.address);
-  const yieldTokenParams = alchemistContract.getYieldTokenParameters(event.params.yieldToken);
   const totalUnderlyingValue = yieldTokenParams.totalShares
     .times(pps)
     .div(BigInt.fromI32(10).pow(yieldTokenParams.decimals as u8));

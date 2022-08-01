@@ -8,8 +8,8 @@ const AlchemistEvents = Object.values(AlchemistInterface.events);
 
 export function createAlchemist(
   name: string,
-  block: number = startBlockNumber,
   address: string = deploymentAddress(name),
+  block: number = startBlockNumber,
 ): DataSource {
   return {
     name,

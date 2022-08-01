@@ -6,6 +6,7 @@ import {
   AlchemistBalanceHistory,
   Block,
   Transaction,
+  DebtToken,
   YieldToken,
   DebtToken,
   TransmuterBalance,
@@ -297,6 +298,7 @@ export function getOrCreateAlchemistGlobalDebtHistory(
     entity.debt = state.debt;
     entity.block = event.block.hash.toHex();
     entity.transaction = event.transaction.hash.toHex();
+    entity.timestamp = event.block.timestamp;
     entity.save();
   }
 

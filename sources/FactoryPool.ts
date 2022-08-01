@@ -6,7 +6,7 @@ import { DataSource } from './utils/types';
 const FactoryPoolInterface = new utils.Interface(require('../abis/FactoryPool.json'));
 const FactoryPoolEvents = Object.values(FactoryPoolInterface.events);
 
-export function createFactoryPool(name: string, block: number, address: string): DataSource {
+export function createFactoryPool(name: string, address: string, block: number): DataSource {
   return {
     name,
     network: networkName,

@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import subgraphDefinition from '../../manifest';
+import subgraphDefinition from '../../manifests/manifest.eth';
 
 export const command = 'check-handlers';
 export const description = 'Verify that every event has a matching handler';
