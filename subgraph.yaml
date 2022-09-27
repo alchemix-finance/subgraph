@@ -1,0 +1,592 @@
+specVersion: 0.0.4
+description: Alchemix Subgraph
+repository: https://github.com/alchemix-finance/subgraph
+schema:
+  file: schema.graphql
+dataSources:
+  - name: AlchemistV2_alUSD
+    network: optimism
+    kind: ethereum/contract
+    mapping:
+      apiVersion: 0.0.6
+      kind: ethereum/events
+      language: wasm/assemblyscript
+      file: AlchemistV2_alUSD/AlchemistV2_alUSD.wasm
+      entities: []
+      eventHandlers:
+        - event: Liquidate(indexed address,indexed address,uint256)
+          handler: handleLiquidate
+        - event: Repay(indexed address,indexed address,uint256,address)
+          handler: handleRepay
+        - event: Liquidate(indexed address,indexed address,indexed address,uint256)
+          handler: handleLiquidate1
+        - event: Harvest(indexed address,uint256,uint256)
+          handler: handleHarvest
+        - event: AddUnderlyingToken(indexed address)
+          handler: handleAddUnderlyingToken
+        - event: AddYieldToken(indexed address)
+          handler: handleAddYieldToken
+        - event: AdminUpdated(address)
+          handler: handleAdminUpdated
+        - event: ApproveMint(indexed address,indexed address,uint256)
+          handler: handleApproveMint
+        - event: ApproveWithdraw(indexed address,indexed address,indexed address,uint256)
+          handler: handleApproveWithdraw
+        - event: Burn(indexed address,uint256,address)
+          handler: handleBurn
+        - event: CreditUnlockRateUpdated(address,uint256)
+          handler: handleCreditUnlockRateUpdated
+        - event: Deposit(indexed address,indexed address,uint256,address)
+          handler: handleDeposit
+        - event: Donate(indexed address,indexed address,uint256)
+          handler: handleDonate
+        - event: Harvest(indexed address,uint256,uint256,uint256)
+          handler: handleHarvest1
+        - event: KeeperSet(address,bool)
+          handler: handleKeeperSet
+        - event: Liquidate(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleLiquidate2
+        - event: LiquidationLimitUpdated(indexed address,uint256,uint256)
+          handler: handleLiquidationLimitUpdated
+        - event: MaximumExpectedValueUpdated(indexed address,uint256)
+          handler: handleMaximumExpectedValueUpdated
+        - event: MaximumLossUpdated(indexed address,uint256)
+          handler: handleMaximumLossUpdated
+        - event: MinimumCollateralizationUpdated(uint256)
+          handler: handleMinimumCollateralizationUpdated
+        - event: Mint(indexed address,uint256,address)
+          handler: handleMint
+        - event: MintingLimitUpdated(uint256,uint256)
+          handler: handleMintingLimitUpdated
+        - event: PendingAdminUpdated(address)
+          handler: handlePendingAdminUpdated
+        - event: ProtocolFeeReceiverUpdated(address)
+          handler: handleProtocolFeeReceiverUpdated
+        - event: ProtocolFeeUpdated(uint256)
+          handler: handleProtocolFeeUpdated
+        - event: Repay(indexed address,indexed address,uint256,address,uint256)
+          handler: handleRepay1
+        - event: RepayLimitUpdated(indexed address,uint256,uint256)
+          handler: handleRepayLimitUpdated
+        - event: SentinelSet(address,bool)
+          handler: handleSentinelSet
+        - event: Snap(indexed address,uint256)
+          handler: handleSnap
+        - event: SweepTokens(indexed address,uint256)
+          handler: handleSweepTokens
+        - event: TokenAdapterUpdated(address,address)
+          handler: handleTokenAdapterUpdated
+        - event: TransmuterUpdated(address)
+          handler: handleTransmuterUpdated
+        - event: UnderlyingTokenEnabled(indexed address,bool)
+          handler: handleUnderlyingTokenEnabled
+        - event: Withdraw(indexed address,indexed address,uint256,address)
+          handler: handleWithdraw
+        - event: YieldTokenEnabled(indexed address,bool)
+          handler: handleYieldTokenEnabled
+      abis:
+        - name: Alchemist
+          file: AlchemistV2_alUSD/abis/Alchemist.json
+        - name: ERC20
+          file: AlchemistV2_alUSD/abis/ERC20.json
+    source:
+      abi: Alchemist
+      address: '0x10294d57A419C8eb78C648372c5bAA27fD1484af'
+      startBlock: .nan
+  - name: AlchemistV2_alETH
+    network: optimism
+    kind: ethereum/contract
+    mapping:
+      apiVersion: 0.0.6
+      kind: ethereum/events
+      language: wasm/assemblyscript
+      file: AlchemistV2_alUSD/AlchemistV2_alUSD.wasm
+      entities: []
+      eventHandlers:
+        - event: Liquidate(indexed address,indexed address,uint256)
+          handler: handleLiquidate
+        - event: Repay(indexed address,indexed address,uint256,address)
+          handler: handleRepay
+        - event: Liquidate(indexed address,indexed address,indexed address,uint256)
+          handler: handleLiquidate1
+        - event: Harvest(indexed address,uint256,uint256)
+          handler: handleHarvest
+        - event: AddUnderlyingToken(indexed address)
+          handler: handleAddUnderlyingToken
+        - event: AddYieldToken(indexed address)
+          handler: handleAddYieldToken
+        - event: AdminUpdated(address)
+          handler: handleAdminUpdated
+        - event: ApproveMint(indexed address,indexed address,uint256)
+          handler: handleApproveMint
+        - event: ApproveWithdraw(indexed address,indexed address,indexed address,uint256)
+          handler: handleApproveWithdraw
+        - event: Burn(indexed address,uint256,address)
+          handler: handleBurn
+        - event: CreditUnlockRateUpdated(address,uint256)
+          handler: handleCreditUnlockRateUpdated
+        - event: Deposit(indexed address,indexed address,uint256,address)
+          handler: handleDeposit
+        - event: Donate(indexed address,indexed address,uint256)
+          handler: handleDonate
+        - event: Harvest(indexed address,uint256,uint256,uint256)
+          handler: handleHarvest1
+        - event: KeeperSet(address,bool)
+          handler: handleKeeperSet
+        - event: Liquidate(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleLiquidate2
+        - event: LiquidationLimitUpdated(indexed address,uint256,uint256)
+          handler: handleLiquidationLimitUpdated
+        - event: MaximumExpectedValueUpdated(indexed address,uint256)
+          handler: handleMaximumExpectedValueUpdated
+        - event: MaximumLossUpdated(indexed address,uint256)
+          handler: handleMaximumLossUpdated
+        - event: MinimumCollateralizationUpdated(uint256)
+          handler: handleMinimumCollateralizationUpdated
+        - event: Mint(indexed address,uint256,address)
+          handler: handleMint
+        - event: MintingLimitUpdated(uint256,uint256)
+          handler: handleMintingLimitUpdated
+        - event: PendingAdminUpdated(address)
+          handler: handlePendingAdminUpdated
+        - event: ProtocolFeeReceiverUpdated(address)
+          handler: handleProtocolFeeReceiverUpdated
+        - event: ProtocolFeeUpdated(uint256)
+          handler: handleProtocolFeeUpdated
+        - event: Repay(indexed address,indexed address,uint256,address,uint256)
+          handler: handleRepay1
+        - event: RepayLimitUpdated(indexed address,uint256,uint256)
+          handler: handleRepayLimitUpdated
+        - event: SentinelSet(address,bool)
+          handler: handleSentinelSet
+        - event: Snap(indexed address,uint256)
+          handler: handleSnap
+        - event: SweepTokens(indexed address,uint256)
+          handler: handleSweepTokens
+        - event: TokenAdapterUpdated(address,address)
+          handler: handleTokenAdapterUpdated
+        - event: TransmuterUpdated(address)
+          handler: handleTransmuterUpdated
+        - event: UnderlyingTokenEnabled(indexed address,bool)
+          handler: handleUnderlyingTokenEnabled
+        - event: Withdraw(indexed address,indexed address,uint256,address)
+          handler: handleWithdraw
+        - event: YieldTokenEnabled(indexed address,bool)
+          handler: handleYieldTokenEnabled
+      abis:
+        - name: Alchemist
+          file: AlchemistV2_alETH/abis/Alchemist.json
+        - name: ERC20
+          file: AlchemistV2_alETH/abis/ERC20.json
+    source:
+      abi: Alchemist
+      address: '0xe04Bb5B4de60FA2fBa69a93adE13A8B3B569d5B4'
+      startBlock: .nan
+  - name: TransmuterV2_DAI
+    network: optimism
+    kind: ethereum/contract
+    mapping:
+      apiVersion: 0.0.6
+      kind: ethereum/events
+      language: wasm/assemblyscript
+      file: TransmuterV2_DAI/TransmuterV2_DAI.wasm
+      entities: []
+      eventHandlers:
+        - event: AdminUpdated(address)
+          handler: handleAdminUpdated
+        - event: Claim(indexed address,indexed address,uint256)
+          handler: handleClaim
+        - event: Deposit(indexed address,indexed address,uint256)
+          handler: handleDeposit
+        - event: Exchange(indexed address,uint256)
+          handler: handleExchange
+        - event: Paused(bool)
+          handler: handlePaused
+        - event: PendingAdminUpdated(address)
+          handler: handlePendingAdminUpdated
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: Withdraw(indexed address,indexed address,uint256)
+          handler: handleWithdraw
+      abis:
+        - name: Transmuter
+          file: TransmuterV2_DAI/abis/Transmuter.json
+        - name: ERC20
+          file: TransmuterV2_DAI/abis/ERC20.json
+    source:
+      abi: Transmuter
+      address: '0xFCD619923456E20EAe298B35E3606277b391BBB4'
+      startBlock: .nan
+  - name: TransmuterV2_USDC
+    network: optimism
+    kind: ethereum/contract
+    mapping:
+      apiVersion: 0.0.6
+      kind: ethereum/events
+      language: wasm/assemblyscript
+      file: TransmuterV2_DAI/TransmuterV2_DAI.wasm
+      entities: []
+      eventHandlers:
+        - event: AdminUpdated(address)
+          handler: handleAdminUpdated
+        - event: Claim(indexed address,indexed address,uint256)
+          handler: handleClaim
+        - event: Deposit(indexed address,indexed address,uint256)
+          handler: handleDeposit
+        - event: Exchange(indexed address,uint256)
+          handler: handleExchange
+        - event: Paused(bool)
+          handler: handlePaused
+        - event: PendingAdminUpdated(address)
+          handler: handlePendingAdminUpdated
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: Withdraw(indexed address,indexed address,uint256)
+          handler: handleWithdraw
+      abis:
+        - name: Transmuter
+          file: TransmuterV2_USDC/abis/Transmuter.json
+        - name: ERC20
+          file: TransmuterV2_USDC/abis/ERC20.json
+    source:
+      abi: Transmuter
+      address: '0xA7ea9ef9E2b5e15971040230F5d6b75C68Aab723'
+      startBlock: .nan
+  - name: TransmuterV2_USDT
+    network: optimism
+    kind: ethereum/contract
+    mapping:
+      apiVersion: 0.0.6
+      kind: ethereum/events
+      language: wasm/assemblyscript
+      file: TransmuterV2_DAI/TransmuterV2_DAI.wasm
+      entities: []
+      eventHandlers:
+        - event: AdminUpdated(address)
+          handler: handleAdminUpdated
+        - event: Claim(indexed address,indexed address,uint256)
+          handler: handleClaim
+        - event: Deposit(indexed address,indexed address,uint256)
+          handler: handleDeposit
+        - event: Exchange(indexed address,uint256)
+          handler: handleExchange
+        - event: Paused(bool)
+          handler: handlePaused
+        - event: PendingAdminUpdated(address)
+          handler: handlePendingAdminUpdated
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: Withdraw(indexed address,indexed address,uint256)
+          handler: handleWithdraw
+      abis:
+        - name: Transmuter
+          file: TransmuterV2_USDT/abis/Transmuter.json
+        - name: ERC20
+          file: TransmuterV2_USDT/abis/ERC20.json
+    source:
+      abi: Transmuter
+      address: '0x4e7d2115E4FeEcD802c96E77B8e03D98104415fa'
+      startBlock: .nan
+  - name: TransmuterV2_ETH
+    network: optimism
+    kind: ethereum/contract
+    mapping:
+      apiVersion: 0.0.6
+      kind: ethereum/events
+      language: wasm/assemblyscript
+      file: TransmuterV2_DAI/TransmuterV2_DAI.wasm
+      entities: []
+      eventHandlers:
+        - event: AdminUpdated(address)
+          handler: handleAdminUpdated
+        - event: Claim(indexed address,indexed address,uint256)
+          handler: handleClaim
+        - event: Deposit(indexed address,indexed address,uint256)
+          handler: handleDeposit
+        - event: Exchange(indexed address,uint256)
+          handler: handleExchange
+        - event: Paused(bool)
+          handler: handlePaused
+        - event: PendingAdminUpdated(address)
+          handler: handlePendingAdminUpdated
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: Withdraw(indexed address,indexed address,uint256)
+          handler: handleWithdraw
+      abis:
+        - name: Transmuter
+          file: TransmuterV2_ETH/abis/Transmuter.json
+        - name: ERC20
+          file: TransmuterV2_ETH/abis/ERC20.json
+    source:
+      abi: Transmuter
+      address: '0xb7C4250f83289ff3Ea9f21f01AAd0b02fb19491a'
+      startBlock: .nan
+  - name: TransmuterBuffer_alUSD
+    network: optimism
+    kind: ethereum/contract
+    mapping:
+      apiVersion: 0.0.6
+      kind: ethereum/events
+      language: wasm/assemblyscript
+      file: TransmuterBuffer_alUSD/TransmuterBuffer_alUSD.wasm
+      entities: []
+      eventHandlers:
+        - event: RefreshStrategies()
+          handler: handleRefreshStrategies
+        - event: RegisterAsset(address,address)
+          handler: handleRegisterAsset
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: SetAlchemist(address)
+          handler: handleSetAlchemist
+        - event: SetAmo(address,address)
+          handler: handleSetAmo
+        - event: SetDivertToAmo(address,bool)
+          handler: handleSetDivertToAmo
+        - event: SetFlowRate(address,uint256)
+          handler: handleSetFlowRate
+        - event: SetSource(address,bool)
+          handler: handleSetSource
+        - event: SetTransmuter(address,address)
+          handler: handleSetTransmuter
+      abis:
+        - name: TransmuterBuffer
+          file: TransmuterBuffer_alUSD/abis/TransmuterBuffer.json
+        - name: ERC20
+          file: TransmuterBuffer_alUSD/abis/ERC20.json
+    source:
+      abi: TransmuterBuffer
+      address: '0xe99a9A717c60F9639B235ede422c27d60FBEB3b9'
+      startBlock: .nan
+  - name: TransmuterBuffer_alETH
+    network: optimism
+    kind: ethereum/contract
+    mapping:
+      apiVersion: 0.0.6
+      kind: ethereum/events
+      language: wasm/assemblyscript
+      file: TransmuterBuffer_alUSD/TransmuterBuffer_alUSD.wasm
+      entities: []
+      eventHandlers:
+        - event: RefreshStrategies()
+          handler: handleRefreshStrategies
+        - event: RegisterAsset(address,address)
+          handler: handleRegisterAsset
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: SetAlchemist(address)
+          handler: handleSetAlchemist
+        - event: SetAmo(address,address)
+          handler: handleSetAmo
+        - event: SetDivertToAmo(address,bool)
+          handler: handleSetDivertToAmo
+        - event: SetFlowRate(address,uint256)
+          handler: handleSetFlowRate
+        - event: SetSource(address,bool)
+          handler: handleSetSource
+        - event: SetTransmuter(address,address)
+          handler: handleSetTransmuter
+      abis:
+        - name: TransmuterBuffer
+          file: TransmuterBuffer_alETH/abis/TransmuterBuffer.json
+        - name: ERC20
+          file: TransmuterBuffer_alETH/abis/ERC20.json
+    source:
+      abi: TransmuterBuffer
+      address: '0x7f50923EE8E2BC3596a63998495baf2948a28f68'
+      startBlock: .nan
+  - name: ThreePoolAssetManager_alUSD
+    network: optimism
+    kind: ethereum/contract
+    mapping:
+      apiVersion: 0.0.6
+      kind: ethereum/events
+      language: wasm/assemblyscript
+      file: ThreePoolAssetManager_alUSD/ThreePoolAssetManager_alUSD.wasm
+      entities: []
+      eventHandlers:
+        - event: AdminUpdated(address)
+          handler: handleAdminUpdated
+        - event: BurnMetaPoolTokens(uint8,uint256,uint256)
+          handler: handleBurnMetaPoolTokens
+        - event: BurnThreePoolTokens(uint8,uint256,uint256)
+          handler: handleBurnThreePoolTokens
+        - event: ClaimRewards(bool,uint256,uint256)
+          handler: handleClaimRewards
+        - event: DepositMetaPoolTokens(uint256,bool)
+          handler: handleDepositMetaPoolTokens
+        - event: MetaPoolSlippageUpdated(uint256)
+          handler: handleMetaPoolSlippageUpdated
+        - event: MintMetaPoolTokens(uint256[2],uint256)
+          handler: handleMintMetaPoolTokens
+        - event: MintMetaPoolTokens(uint8,uint256,uint256)
+          handler: handleMintMetaPoolTokens1
+        - event: MintThreePoolTokens(uint256[3],uint256)
+          handler: handleMintThreePoolTokens
+        - event: MintThreePoolTokens(uint8,uint256,uint256)
+          handler: handleMintThreePoolTokens1
+        - event: OperatorUpdated(address)
+          handler: handleOperatorUpdated
+        - event: PendingAdminUpdated(address)
+          handler: handlePendingAdminUpdated
+        - event: ReclaimThreePoolAsset(uint8,uint256)
+          handler: handleReclaimThreePoolAsset
+        - event: RewardReceiverUpdated(address)
+          handler: handleRewardReceiverUpdated
+        - event: ThreePoolSlippageUpdated(uint256)
+          handler: handleThreePoolSlippageUpdated
+        - event: TransmuterBufferUpdated(address)
+          handler: handleTransmuterBufferUpdated
+        - event: WithdrawMetaPoolTokens(uint256,bool)
+          handler: handleWithdrawMetaPoolTokens
+      abis:
+        - name: ThreePoolAssetManager
+          file: ThreePoolAssetManager_alUSD/abis/ThreePoolAssetManager.json
+        - name: ERC20
+          file: ThreePoolAssetManager_alUSD/abis/ERC20.json
+    source:
+      abi: ThreePoolAssetManager
+      address: '0x9735F7d3Ea56b454b24fFD74C58E9bD85cfaD31B'
+      startBlock: 14543500
+  - name: EthAssetManager
+    network: optimism
+    kind: ethereum/contract
+    mapping:
+      apiVersion: 0.0.6
+      kind: ethereum/events
+      language: wasm/assemblyscript
+      file: EthAssetManager/EthAssetManager.wasm
+      entities: []
+      eventHandlers:
+        - event: AdminUpdated(address)
+          handler: handleAdminUpdated
+        - event: BurnMetaPoolTokens(uint8,uint256,uint256)
+          handler: handleBurnMetaPoolTokens
+        - event: ClaimRewards(bool,uint256,uint256)
+          handler: handleClaimRewards
+        - event: DepositMetaPoolTokens(uint256,bool)
+          handler: handleDepositMetaPoolTokens
+        - event: MetaPoolSlippageUpdated(uint256)
+          handler: handleMetaPoolSlippageUpdated
+        - event: MintMetaPoolTokens(uint256[2],uint256)
+          handler: handleMintMetaPoolTokens
+        - event: MintMetaPoolTokens(uint8,uint256,uint256)
+          handler: handleMintMetaPoolTokens1
+        - event: OperatorUpdated(address)
+          handler: handleOperatorUpdated
+        - event: PendingAdminUpdated(address)
+          handler: handlePendingAdminUpdated
+        - event: ReclaimEth(uint256)
+          handler: handleReclaimEth
+        - event: RewardReceiverUpdated(address)
+          handler: handleRewardReceiverUpdated
+        - event: SweepEth(uint256)
+          handler: handleSweepEth
+        - event: SweepToken(address,uint256)
+          handler: handleSweepToken
+        - event: TransmuterBufferUpdated(address)
+          handler: handleTransmuterBufferUpdated
+        - event: WithdrawMetaPoolTokens(uint256,bool)
+          handler: handleWithdrawMetaPoolTokens
+      abis:
+        - name: EthAssetManager
+          file: EthAssetManager/abis/EthAssetManager.json
+        - name: ERC20
+          file: EthAssetManager/abis/ERC20.json
+    source:
+      abi: EthAssetManager
+      address: '0xe761bf731A06fE8259FeE05897B2687D56933110'
+      startBlock: 14573961
+  - name: alUSDMetaPool
+    network: optimism
+    kind: ethereum/contract
+    mapping:
+      apiVersion: 0.0.6
+      kind: ethereum/events
+      language: wasm/assemblyscript
+      file: alUSDMetaPool/alUSDMetaPool.wasm
+      entities: []
+      eventHandlers:
+        - event: TokenExchange(indexed address,int128,uint256,int128,uint256)
+          handler: handleTokenExchange
+        - event: TokenExchangeUnderlying(indexed address,int128,uint256,int128,uint256)
+          handler: handleTokenExchangeUnderlying
+        - event: AddLiquidity(indexed address,uint256[2],uint256[2],uint256,uint256)
+          handler: handleAddLiquidity
+        - event: RemoveLiquidity(indexed address,uint256[2],uint256[2],uint256)
+          handler: handleRemoveLiquidity
+        - event: RemoveLiquidityOne(indexed address,uint256,uint256,uint256)
+          handler: handleRemoveLiquidityOne
+        - event: RemoveLiquidityImbalance(indexed address,uint256[2],uint256[2],uint256,uint256)
+          handler: handleRemoveLiquidityImbalance
+      abis:
+        - name: MetaPool
+          file: alUSDMetaPool/abis/MetaPool.json
+        - name: ERC20
+          file: alUSDMetaPool/abis/ERC20.json
+    source:
+      abi: MetaPool
+      address: '0x43b4fdfd4ff969587185cdb6f0bd875c5fc83f8c'
+      startBlock: 11955332
+  - name: alETHFactoryPool
+    network: optimism
+    kind: ethereum/contract
+    mapping:
+      apiVersion: 0.0.6
+      kind: ethereum/events
+      language: wasm/assemblyscript
+      file: alETHFactoryPool/alETHFactoryPool.wasm
+      entities: []
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: TokenExchange(indexed address,int128,uint256,int128,uint256)
+          handler: handleTokenExchange
+        - event: AddLiquidity(indexed address,uint256[2],uint256[2],uint256,uint256)
+          handler: handleAddLiquidity
+        - event: RemoveLiquidity(indexed address,uint256[2],uint256[2],uint256)
+          handler: handleRemoveLiquidity
+        - event: RemoveLiquidityOne(indexed address,uint256,uint256,uint256)
+          handler: handleRemoveLiquidityOne
+        - event: RemoveLiquidityImbalance(indexed address,uint256[2],uint256[2],uint256,uint256)
+          handler: handleRemoveLiquidityImbalance
+        - event: RampA(uint256,uint256,uint256,uint256)
+          handler: handleRampA
+        - event: StopRampA(uint256,uint256)
+          handler: handleStopRampA
+      abis:
+        - name: FactoryPool
+          file: alETHFactoryPool/abis/FactoryPool.json
+        - name: ERC20
+          file: alETHFactoryPool/abis/ERC20.json
+    source:
+      abi: FactoryPool
+      address: '0xc4c319e2d4d66cca4464c0c2b32c9bd23ebe784e'
+      startBlock: 13227440

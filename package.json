@@ -13,15 +13,15 @@
     "build": "graph build subgraph.js --skip-migrations",
     "predeploy": "graph create alchemix/alchemix --node http://127.0.0.1:8020 || true",
     "deploy": "graph deploy alchemix/alchemix subgraph.js --ipfs http://localhost:5001 --node http://127.0.0.1:8020/ --skip-migrations --version-label local",
-    "deploy-prod": "graph deploy alchemix-finance/alchemix_v2 subgraph.js --product hosted-service --skip-migrations",
+    "deploy-prod": "graph deploy alchemix-finance/alchemix_v2_optimism subgraph.js --product hosted-service --skip-migrations",
     "deploy-dev": "export NETWORK_NAME=mainnet; graph deploy alchemix-finance/alchemix_v2_dev subgraph.js --product hosted-service --skip-migrations",
     "deploy-ftm": "export NETWORK_NAME=fantom; graph deploy alchemix-finance/alchemix_v2_ftm subgraph.ftm.js --product hosted-service --skip-migrations",
     "deploy-peg": "graph deploy alchemix-finance/alcx-curve-dev subgraph.js --product hosted-service --skip-migrations",
     "lint": "prettier --ignore-path .gitignore --list-different \"**/*.{ts,js,json,yaml}\""
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "^0.26.0",
-    "@graphprotocol/graph-ts": "^0.24.1",
+    "@graphprotocol/graph-cli": "^0.34.0",
+    "@graphprotocol/graph-ts": "^0.28.0",
     "@graphql-codegen/cli": "^2.6.2",
     "@tsconfig/node16": "^1.0.2",
     "@types/fs-extra": "^9.0.13",
