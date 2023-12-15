@@ -8,7 +8,6 @@ import {
   Transaction,
   DebtToken,
   YieldToken,
-  DebtToken,
   TransmuterBalance,
   Transmuter,
   TransmuterBalanceHistory,

@@ -39,7 +39,7 @@ function getEventId(event: ethereum.Event): string {
 }
 
 function getPoolSnapshot(pool: Pool, poolAddress: Address, event: ethereum.Event): Pool {
-  if (pool != null) {
+  if (pool) {
     let poolContract = MetaPool.bind(poolAddress);
 
     // Update coin balances and underlying coin balances/rates
@@ -60,7 +60,7 @@ export function handleAddLiquidity(event: AddLiquidity): void {
   createMetaPoolEvent<PoolAddLiquidityEvent>(event);
   let pool = getOrCreatePool(event.address, event);
 
-  if (pool != null) {
+  if (pool) {
     pool = getPoolSnapshot(pool, event.address, event);
 
     let provider = getOrCreateAccount(event.params.provider);
@@ -86,7 +86,7 @@ export function handleRemoveLiquidity(event: RemoveLiquidity): void {
   createMetaPoolEvent<PoolRemoveLiquidityEvent>(event);
   let pool = getOrCreatePool(event.address, event);
 
-  if (pool != null) {
+  if (pool) {
     pool = getPoolSnapshot(pool, event.address, event);
 
     let provider = getOrCreateAccount(event.params.provider);
@@ -113,7 +113,7 @@ export function handleRemoveLiquidityOne(event: RemoveLiquidityOne): void {
   createMetaPoolEvent<PoolRemoveLiquidityOneEvent>(event);
   let pool = getOrCreatePool(event.address, event);
 
-  if (pool != null) {
+  if (pool) {
     pool = getPoolSnapshot(pool, event.address, event);
 
     let provider = getOrCreateAccount(event.params.provider);
@@ -137,7 +137,7 @@ export function handleRemoveLiquidityOne(event: RemoveLiquidityOne): void {
 function getOrCreatePool(address: Address, event: ethereum.Event): Pool {
   let pool = Pool.load(address.toHexString());
 
-  if (pool == null) {
+  if (pool === null) {
     let poolContract = MetaPool.bind(address as Address);
 
     pool = new Pool(address.toHexString());
@@ -344,7 +344,7 @@ class TokenInfo {
 export function getOrCreateToken(address: Address, event: ethereum.Event): Token {
   let token = Token.load(address.toHexString());
 
-  if (token == null) {
+  if (token === null) {
     token = new Token(address.toHexString());
     token.address = address;
 
@@ -383,7 +383,7 @@ export function handleTokenExchange(event: TokenExchange): void {}
 // export function handleTokenExchange(event: TokenExchange): void {
 //   let pool = getOrCreatePool(event.address, event);
 
-//     if (pool != null) {
+//     if (pool) {
 //       pool = getPoolSnapshot(pool, event.address, event)
 
 //       let coinSold = Coin.load(pool.id + '-' + event.params.sold_id.toString())!
@@ -433,7 +433,7 @@ export function handleTokenExchangeUnderlying(event: TokenExchangeUnderlying): v
 // export function handleTokenExchangeUnderlying(event: TokenExchangeUnderlying): void {
 //   let pool = getOrCreatePool(event.address, event);
 
-//   if (pool != null) {
+//   if (pool) {
 //     pool = getPoolSnapshot(pool, event.address, event)
 
 //     let coinSold = getOrCreateUnderlyingCoin(pool, token, event.params.sold_id, event);
