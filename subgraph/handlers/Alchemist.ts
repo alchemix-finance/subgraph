@@ -26,6 +26,7 @@ import {
   AlchemistRepayLimitUpdatedEvent,
   AlchemistSentinelSetEvent,
   AlchemistSnapEvent,
+  AlchemistSweepTokensEvent,
   AlchemistTokenAdapterUpdatedEvent,
   AlchemistTransmuterUpdatedEvent,
   AlchemistUnderlyingTokenEnabledEvent,
@@ -58,6 +59,7 @@ import {
   RepayLimitUpdated,
   SentinelSet,
   Snap,
+  SweepTokens,
   TokenAdapterUpdated,
   TransmuterUpdated,
   UnderlyingTokenEnabled,
@@ -82,6 +84,7 @@ import {
   getOrCreateAlchemistGlobalDebtHistory,
   getOrCreateDebtToken,
 } from '../utils/entities';
+import { SetTransmuter } from '../generated/TransmuterBuffer_alETH/TransmuterBuffer';
 
 function getOrCreateAlchemist(event: ethereum.Event): Alchemist {
   let entity = Alchemist.load(event.address.toHex());
@@ -355,6 +358,13 @@ export function handleSnap(event: Snap): void {
   const entity = createAlchemistEvent<AlchemistSnapEvent>(event);
   entity.expectedValue = event.params.expectedValue;
   entity.yieldToken = event.params.yieldToken;
+  entity.save();
+}
+
+export function handleSweepTokens(event: SweepTokens): void {
+  const entity = createAlchemistEvent<AlchemistSweepTokensEvent>(event);
+  entity.amount = event.params.amount;
+  entity.rewardToken = event.params.rewardToken;
   entity.save();
 }
 

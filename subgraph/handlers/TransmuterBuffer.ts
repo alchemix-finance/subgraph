@@ -11,6 +11,7 @@ import {
   TransmuterBufferSetSourceEvent,
   TransmuterBufferSetAmoEvent,
   TransmuterBufferSetDivertToAmoEvent,
+  TransmuterBufferSetTransmuter,
 } from '../generated/schema';
 import {
   RefreshStrategies,
@@ -22,6 +23,7 @@ import {
   SetAmo,
   SetFlowRate,
   SetSource,
+  SetTransmuter,
 } from '../generated/TransmuterBuffer_alETH/TransmuterBuffer';
 import { SetDivertToAmo } from '../generated/TransmuterBuffer_alUSD/TransmuterBuffer';
 import { createEvent, getOrCreateUnderlyingToken } from '../utils/entities';
@@ -84,6 +86,12 @@ export function handleRoleRevoked(event: RoleRevoked): void {
 export function handleSetAlchemist(event: SetAlchemist): void {
   const entity = createTransmuterBufferEvent<TransmuterBufferSetAlchemistEvent>(event);
   entity.alchemist = event.params.alchemist;
+  entity.save();
+}
+
+export function handleSetTransmuter(event: SetTransmuter): void {
+  const entity = createTransmuterBufferEvent<TransmuterBufferSetTransmuter>(event);
+  entity.transmuter = event.params.transmuter;
   entity.save();
 }
 

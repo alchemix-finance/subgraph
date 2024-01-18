@@ -494,6 +494,18 @@ type AlchemistSnapEvent implements Event @entity {
   yieldToken: Bytes!
 }
 
+type AlchemistSweepTokensEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+  rewardToken: Bytes!
+}
+
 type AlchemistTokenAdapterUpdatedEvent implements Event @entity {
   id: ID!
   cursor: BigInt!
@@ -812,6 +824,15 @@ type TransmuterBufferSetAlchemistEvent implements Event @entity {
   alchemist: Bytes!
 }
 
+type TransmuterBufferSetTransmuter implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  transmuter: Bytes!
+}
+
 type TransmuterBufferSetFlowRateEvent implements Event @entity {
   id: ID!
   cursor: BigInt!
@@ -979,6 +1000,19 @@ type PoolRemoveLiquidityEvent implements PoolEvent @entity {
   fees: [BigInt!]
   tokenSupply: BigInt
   invariant: BigInt
+
+  block: Block!
+  timestamp: BigInt!
+  transaction: Bytes!
+}
+
+type PoolRampAEvent implements PoolEvent @entity {
+  id: ID!
+  pool: Pool!
+  oldA: BigInt!
+  newA: BigInt!
+  initialTime: BigInt!
+  futureTime: BigInt!
 
   block: Block!
   timestamp: BigInt!
@@ -1481,25 +1515,25 @@ type EthAssetManagerReclaimEthEvent implements Event @entity {
   amount: BigInt!
 }
 
-type EthAssetManagerSweepTokenEvent implements Event @entity {
-  id: ID!
-  cursor: BigInt!
-  index: BigInt!
-  block: Block!
-  timestamp: BigInt!
-  contract: Contract!
-  transaction: Transaction!
-  token: Bytes!
-  amount: BigInt!
-}
+# type EthAssetManagerSweepTokenEvent implements Event @entity {
+#   id: ID!
+#   cursor: BigInt!
+#   index: BigInt!
+#   block: Block!
+#   timestamp: BigInt!
+#   contract: Contract!
+#   transaction: Transaction!
+#   token: Bytes!
+#   amount: BigInt!
+# }
 
-type EthAssetManagerSweepEthEvent implements Event @entity {
-  id: ID!
-  cursor: BigInt!
-  index: BigInt!
-  block: Block!
-  timestamp: BigInt!
-  contract: Contract!
-  transaction: Transaction!
-  amount: BigInt!
-}
+# type EthAssetManagerSweepEthEvent implements Event @entity {
+#   id: ID!
+#   cursor: BigInt!
+#   index: BigInt!
+#   block: Block!
+#   timestamp: BigInt!
+#   contract: Contract!
+#   transaction: Transaction!
+#   amount: BigInt!
+# }
