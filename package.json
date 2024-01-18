@@ -47,6 +47,7 @@
     "*.{ts,js,json,yaml}": "prettier --write"
   },
   "dependencies": {
-    "@protofire/subgraph-toolkit": "0.1.2"
+    "@protofire/subgraph-toolkit": "0.1.2",
+    "concat-stream": "^2.0.0"
   }
 }
