@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           cache: yarn
-          node-version: 16.x
+          node-version: 18.x
 
       - name: Setup SSH keys and hosts
         env:
@@ -65,7 +65,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           cache: yarn
-          node-version: 16.x
+          node-version: 18.x
 
       - name: Setup SSH keys and hosts
         env:
@@ -111,7 +111,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           cache: yarn
-          node-version: 16.x
+          node-version: 18.x
 
       - name: Setup SSH keys and hosts
         env:
