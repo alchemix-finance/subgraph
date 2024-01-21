@@ -15,8 +15,8 @@ jobs:
     name: Builds the subgraph to ensure it compiles correctly
     runs-on: ubuntu-latest
     env:
-      NETWORK_NAME: mainnet
-      START_BLOCK_NUMBER: 14265505
+      NETWORK_NAME: MAINNET
+      START_BLOCK_NUMBER_MAINNET: 17265505
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -58,8 +58,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/dev'
     env:
-      NETWORK_NAME: mainnet
-      START_BLOCK_NUMBER: 14265505
+      NETWORK_NAME: MAINNET
+      START_BLOCK_NUMBER_MAINNET: 17265505
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -104,8 +104,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     env:
-      NETWORK_NAME: mainnet
-      START_BLOCK_NUMBER: 14265505
+      NETWORK_NAME: MAINNET
+      START_BLOCK_NUMBER_MAINNET: 17265505
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2

@@ -1,12 +1,12 @@
 import { utils } from 'ethers';
 import { eventDeclarations } from './utils/abis';
-import { networkName } from './utils/constants';
+import { networkName, startBlockNumber } from './utils/constants';
 import { DataSource } from './utils/types';
 
 const FactoryPoolInterface = new utils.Interface(require('../abis/FactoryPool.json'));
 const FactoryPoolEvents = Object.values(FactoryPoolInterface.events);
 
-export function createFactoryPool(name: string, address: string, block: number): DataSource {
+export function createFactoryPool(name: string, address: string, block: number = startBlockNumber): DataSource {
   return {
     name,
     network: networkName,
@@ -32,7 +32,7 @@ export function createFactoryPool(name: string, address: string, block: number):
     source: {
       abi: 'FactoryPool',
       address,
-      startBlock: 16265505,
+      startBlock: startBlockNumber,
     },
   };
 }

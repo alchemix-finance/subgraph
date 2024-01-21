@@ -36,7 +36,7 @@ export function createAlchemist(
     source: {
       abi: 'Alchemist',
       address,
-      startBlock: 16265505,
+      startBlock: startBlockNumber,
     },
   };
 }

@@ -36,7 +36,7 @@ export function createEthAssetManager(
     source: {
       abi: 'EthAssetManager',
       address,
-      startBlock: 16265505,
+      startBlock: startBlockNumber,
     },
   };
 }
