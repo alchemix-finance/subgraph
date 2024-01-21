@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           cache: yarn
-          node-version: 16.x
+          node-version: 18.x
 
       - name: Setup SSH keys and hosts
         env:
@@ -49,7 +49,7 @@ jobs:
 
       - name: Compile
         run: yarn codegen
-      
+
       - name: Build
         run: yarn build
 
@@ -65,7 +65,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           cache: yarn
-          node-version: 16.x
+          node-version: 18.x
 
       - name: Setup SSH keys and hosts
         env:
@@ -92,7 +92,7 @@ jobs:
 
       - name: Compile
         run: yarn codegen
-      
+
       - name: Build
         run: yarn build
 
@@ -111,7 +111,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           cache: yarn
-          node-version: 16.x
+          node-version: 18.x
 
       - name: Setup SSH keys and hosts
         env:
@@ -138,12 +138,12 @@ jobs:
 
       - name: Compile
         run: yarn codegen
-      
+
       - name: Build
         run: yarn build
 
       - name: Deploy ETH Mainnet
         run: yarn deploy-prod
-      
+
       - name: Deploy Fantom
         run: yarn deploy-ftm
