@@ -824,15 +824,6 @@ type TransmuterBufferSetAlchemistEvent implements Event @entity {
   alchemist: Bytes!
 }
 
-type TransmuterBufferSetTransmuter implements Event @entity {
-  id: ID!
-  cursor: BigInt!
-  index: BigInt!
-  block: Block!
-  timestamp: BigInt!
-  transmuter: Bytes!
-}
-
 type TransmuterBufferSetFlowRateEvent implements Event @entity {
   id: ID!
   cursor: BigInt!
