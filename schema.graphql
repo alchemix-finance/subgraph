@@ -1043,19 +1043,6 @@ type PoolRemoveLiquidityOneEvent implements PoolEvent @entity {
   transaction: Bytes!
 }
 
-type PoolRampAEvent implements PoolEvent @entity {
-  id: ID!
-  pool: Pool!
-  old_A: BigInt!
-  new_A: BigInt!
-  initial_time: BigInt!
-  future_time: BigInt!
-
-  block: Block!
-  timestamp: BigInt!
-  transaction: Bytes!
-}
-
 type PoolStopRampAEvent implements PoolEvent @entity {
   id: ID!
   pool: Pool!
@@ -1551,25 +1538,25 @@ type EthAssetManagerReclaimEthEvent implements Event @entity {
   amount: BigInt!
 }
 
-# type EthAssetManagerSweepTokenEvent implements Event @entity {
-#   id: ID!
-#   cursor: BigInt!
-#   index: BigInt!
-#   block: Block!
-#   timestamp: BigInt!
-#   contract: Contract!
-#   transaction: Transaction!
-#   token: Bytes!
-#   amount: BigInt!
-# }
+type EthAssetManagerSweepTokenEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  token: Bytes!
+  amount: BigInt!
+}
 
-# type EthAssetManagerSweepEthEvent implements Event @entity {
-#   id: ID!
-#   cursor: BigInt!
-#   index: BigInt!
-#   block: Block!
-#   timestamp: BigInt!
-#   contract: Contract!
-#   transaction: Transaction!
-#   amount: BigInt!
-# }
+type EthAssetManagerSweepEthEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  amount: BigInt!
+}

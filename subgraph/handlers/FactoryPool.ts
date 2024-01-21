@@ -83,9 +83,6 @@ export function handleAddLiquidity(event: AddLiquidity): void {
   }
 }
 
-export function handleRampA(): void {}
-export function handleStopRampA(): void {}
-
 export function handleRemoveLiquidity(event: RemoveLiquidity): void {
   createFactoryPoolEvent<PoolRemoveLiquidityEvent>(event);
   let pool = getOrCreatePool(event.address, event);
