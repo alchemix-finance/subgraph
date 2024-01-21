@@ -375,6 +375,10 @@ function getTokenInfo(address: Address): TokenInfo {
     decimals.reverted ? 18 : decimals.value,
   );
 }
+
+export function handleRampA(): void {}
+export function handleStopRampA(): void {}
+
 export function handleTokenExchange(event: TokenExchange): void {}
 // export function handleTokenExchange(event: TokenExchange): void {
 //   let pool = getOrCreatePool(event.address, event);

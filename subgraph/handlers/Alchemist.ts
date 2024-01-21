@@ -358,6 +358,8 @@ export function handleSnap(event: Snap): void {
   entity.save();
 }
 
+export function handleSweepTokens(): void {}
+
 export function handleTokenAdapterUpdated(event: TokenAdapterUpdated): void {
   const entity = createAlchemistEvent<AlchemistTokenAdapterUpdatedEvent>(event);
   entity.tokenAdapter = event.params.tokenAdapter;

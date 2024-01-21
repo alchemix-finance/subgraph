@@ -116,3 +116,5 @@ export function handleSetDivertToAmo(event: SetDivertToAmo): void {
   entity.divert = event.params.divert;
   entity.save();
 }
+
+export function handleSetTransmuter(): void {}

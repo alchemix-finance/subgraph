@@ -193,3 +193,6 @@ export function handleReclaimEth(event: ReclaimEth): void {
 
   getOrCreateEthAssetManagerMetaPoolTokenBalanceHistory(token, event.params.amount.times(BigInt.fromI32(-1)), event);
 }
+
+export function handleSweepEth(): void {}
+export function handleSweepToken(): void {}
