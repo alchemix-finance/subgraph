@@ -8,7 +8,7 @@ const ThreePoolAssetManagerEvents = Object.values(ThreePoolAssetManagerInterface
 
 export function createThreePoolAssetManager(
   name: string,
-  block: number = startBlockNumber,
+  block: number,
   address: string = deploymentAddress(name),
 ): DataSource {
   return {
@@ -36,7 +36,7 @@ export function createThreePoolAssetManager(
     source: {
       abi: 'ThreePoolAssetManager',
       address,
-      startBlock: startBlockNumber,
+      startBlock: block,
     },
   };
 }
