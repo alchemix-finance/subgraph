@@ -11,6 +11,7 @@ import {
   TransmuterBufferSetSourceEvent,
   TransmuterBufferSetAmoEvent,
   TransmuterBufferSetDivertToAmoEvent,
+  TransmuterBufferSetTransmuterEvent,
 } from '../generated/schema';
 import {
   RefreshStrategies,
@@ -23,7 +24,7 @@ import {
   SetFlowRate,
   SetSource,
 } from '../generated/TransmuterBuffer_alETH/TransmuterBuffer';
-import { SetDivertToAmo } from '../generated/TransmuterBuffer_alUSD/TransmuterBuffer';
+import { SetDivertToAmo, SetTransmuter } from '../generated/TransmuterBuffer_alUSD/TransmuterBuffer';
 import { createEvent, getOrCreateUnderlyingToken } from '../utils/entities';
 
 function getOrCreateTransmuterBuffer(event: ethereum.Event): TransmuterBuffer {
@@ -98,6 +99,13 @@ export function handleSetSource(event: SetSource): void {
   const entity = createTransmuterBufferEvent<TransmuterBufferSetSourceEvent>(event);
   entity.flag = event.params.flag;
   entity.source = event.params.source;
+  entity.save();
+}
+
+export function handleSetTransmuter(event: SetTransmuter): void {
+  const entity = createTransmuterBufferEvent<TransmuterBufferSetTransmuterEvent>(event);
+  entity.underlyingToken = event.params.underlyingToken;
+  entity.transmuter = event.params.transmuter;
   entity.save();
 }
 

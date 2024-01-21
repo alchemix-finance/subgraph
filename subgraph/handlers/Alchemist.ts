@@ -26,6 +26,7 @@ import {
   AlchemistRepayLimitUpdatedEvent,
   AlchemistSentinelSetEvent,
   AlchemistSnapEvent,
+  AlchemistSweepTokensEvent,
   AlchemistTokenAdapterUpdatedEvent,
   AlchemistTransmuterUpdatedEvent,
   AlchemistUnderlyingTokenEnabledEvent,
@@ -68,6 +69,7 @@ import {
   Repay1,
   Liquidate1,
   Liquidate2,
+  SweepTokens,
 } from '../generated/AlchemistV2_alUSD/Alchemist';
 import { ERC20 as ERC20Contract } from '../generated/AlchemistV2_alUSD/ERC20';
 import {
@@ -355,6 +357,13 @@ export function handleSnap(event: Snap): void {
   const entity = createAlchemistEvent<AlchemistSnapEvent>(event);
   entity.expectedValue = event.params.expectedValue;
   entity.yieldToken = event.params.yieldToken;
+  entity.save();
+}
+
+export function handleSweepTokens(event: SweepTokens): void {
+  const entity = createAlchemistEvent<AlchemistSweepTokensEvent>(event);
+  entity.rewardToken = event.params.rewardToken;
+  entity.amount = event.params.amount;
   entity.save();
 }
 

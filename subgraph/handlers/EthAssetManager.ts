@@ -11,6 +11,8 @@ import {
   PendingAdminUpdated,
   ReclaimEth,
   RewardReceiverUpdated,
+  SweepEth,
+  SweepToken,
   TransmuterBufferUpdated,
   WithdrawMetaPoolTokens,
 } from '../generated/EthAssetManager/EthAssetManager';
@@ -26,6 +28,8 @@ import {
   EthAssetManagerPendingAdminUpdatedEvent,
   EthAssetManagerReclaimEthEvent,
   EthAssetManagerRewardReceiverUpdatedEvent,
+  EthAssetManagerSweepEthEvent,
+  EthAssetManagerSweepTokenEvent,
   EthAssetManagerTransmuterBufferUpdatedEvent,
   EthAssetManagerWithdrawMetaPoolTokensEvent,
 } from '../generated/schema';
@@ -78,6 +82,18 @@ export function handleOperatorUpdated(event: OperatorUpdated): void {
 export function handleRewardReceiverUpdated(event: RewardReceiverUpdated): void {
   const entity = createEthAssetManagerEvent<EthAssetManagerRewardReceiverUpdatedEvent>(event);
   entity.rewardReceiver = event.params.rewardReceiver;
+  entity.save();
+}
+
+export function handleSweepEth(event: SweepEth): void {
+  const entity = createEthAssetManagerEvent<EthAssetManagerSweepEthEvent>(event);
+  entity.amount = event.params.amount;
+  entity.save();
+}
+
+export function handleSweepToken(event: SweepToken): void {
+  const entity = createEthAssetManagerEvent<EthAssetManagerSweepTokenEvent>(event);
+  entity.amount = event.params.amount;
   entity.save();
 }
 
