@@ -32,7 +32,7 @@ export function createMetaPool(name: string, address: string, block: number): Da
     source: {
       abi: 'MetaPool',
       address,
-      startBlock: block,
+      startBlock: 14265505,
     },
   };
 }

@@ -36,7 +36,7 @@ export function createThreePoolAssetManager(
     source: {
       abi: 'ThreePoolAssetManager',
       address,
-      startBlock: block,
+      startBlock: 14265505,
     },
   };
 }
