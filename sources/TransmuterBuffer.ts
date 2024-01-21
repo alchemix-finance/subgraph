@@ -36,7 +36,7 @@ export function createTransmuterBuffer(
     source: {
       abi: 'TransmuterBuffer',
       address,
-      startBlock: block,
+      startBlock: startBlockNumber,
     },
   };
 }

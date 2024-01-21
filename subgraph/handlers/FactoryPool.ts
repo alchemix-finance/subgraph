@@ -4,9 +4,11 @@ import { getDailyTradeVolume, getHourlyTradeVolume, getWeeklyTradeVolume } from 
 import {
   AddLiquidity,
   FactoryPool,
+  RampA,
   RemoveLiquidity,
   RemoveLiquidityImbalance,
   RemoveLiquidityOne,
+  StopRampA,
   TokenExchange,
 } from '../generated/alETHFactoryPool/FactoryPool';
 import { ERC20, Transfer } from '../generated/alETHFactoryPool/ERC20';
@@ -110,6 +112,9 @@ export function handleRemoveLiquidity(event: RemoveLiquidity): void {
 }
 
 export function handleRemoveLiquidityImbalance(event: RemoveLiquidityImbalance): void {}
+
+export function handleRampA(event: RampA): void {}
+export function handleStopRampA(event: StopRampA): void {}
 
 export function handleRemoveLiquidityOne(event: RemoveLiquidityOne): void {
   createFactoryPoolEvent<PoolRemoveLiquidityOneEvent>(event);

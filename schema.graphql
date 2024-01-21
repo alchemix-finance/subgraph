@@ -502,8 +502,8 @@ type AlchemistSweepTokensEvent implements Event @entity {
   timestamp: BigInt!
   contract: Contract!
   transaction: Transaction!
-  amount: BigInt!
   rewardToken: Bytes!
+  amount: BigInt!
 }
 
 type AlchemistTokenAdapterUpdatedEvent implements Event @entity {
@@ -857,6 +857,18 @@ type TransmuterBufferSetSourceEvent implements Event @entity {
   source: Bytes!
 }
 
+type TransmuterBufferSetTransmuterEvent implements Event @entity {
+  id: ID!
+  cursor: BigInt!
+  index: BigInt!
+  block: Block!
+  timestamp: BigInt!
+  contract: Contract!
+  transaction: Transaction!
+  underlyingToken: Bytes!
+  transmuter: Bytes!
+}
+
 type TransmuterBufferSetAmoEvent implements Event @entity {
   id: ID!
   cursor: BigInt!
@@ -1025,6 +1037,30 @@ type PoolRemoveLiquidityOneEvent implements PoolEvent @entity {
   provider: Account!
   tokenAmount: BigInt!
   coinAmount: BigInt!
+
+  block: Block!
+  timestamp: BigInt!
+  transaction: Bytes!
+}
+
+type PoolRampAEvent implements PoolEvent @entity {
+  id: ID!
+  pool: Pool!
+  old_A: BigInt!
+  new_A: BigInt!
+  initial_time: BigInt!
+  future_time: BigInt!
+
+  block: Block!
+  timestamp: BigInt!
+  transaction: Bytes!
+}
+
+type PoolStopRampAEvent implements PoolEvent @entity {
+  id: ID!
+  pool: Pool!
+  A: BigInt!
+  t: BigInt!
 
   block: Block!
   timestamp: BigInt!

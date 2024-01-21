@@ -70,6 +70,7 @@ import {
   Repay1,
   Liquidate1,
   Liquidate2,
+  SweepTokens,
 } from '../generated/AlchemistV2_alUSD/Alchemist';
 import { ERC20 as ERC20Contract } from '../generated/AlchemistV2_alUSD/ERC20';
 import {
@@ -363,8 +364,8 @@ export function handleSnap(event: Snap): void {
 
 export function handleSweepTokens(event: SweepTokens): void {
   const entity = createAlchemistEvent<AlchemistSweepTokensEvent>(event);
-  entity.amount = event.params.amount;
   entity.rewardToken = event.params.rewardToken;
+  entity.amount = event.params.amount;
   entity.save();
 }
 

@@ -1,12 +1,12 @@
 import { utils } from 'ethers';
 import { eventDeclarations } from './utils/abis';
-import { networkName } from './utils/constants';
+import { networkName, startBlockNumber } from './utils/constants';
 import { DataSource } from './utils/types';
 
 const MetaPoolInterface = new utils.Interface(require('../abis/MetaPool.json'));
 const MetaPoolEvents = Object.values(MetaPoolInterface.events);
 
-export function createMetaPool(name: string, address: string, block: number): DataSource {
+export function createMetaPool(name: string, address: string, block: number = startBlockNumber): DataSource {
   return {
     name,
     network: networkName,
@@ -32,7 +32,7 @@ export function createMetaPool(name: string, address: string, block: number): Da
     source: {
       abi: 'MetaPool',
       address,
-      startBlock: block,
+      startBlock: startBlockNumber,
     },
   };
 }
