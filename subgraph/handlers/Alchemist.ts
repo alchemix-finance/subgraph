@@ -59,7 +59,6 @@ import {
   RepayLimitUpdated,
   SentinelSet,
   Snap,
-  SweepTokens,
   TokenAdapterUpdated,
   TransmuterUpdated,
   UnderlyingTokenEnabled,
@@ -85,7 +84,6 @@ import {
   getOrCreateAlchemistGlobalDebtHistory,
   getOrCreateDebtToken,
 } from '../utils/entities';
-import { SetTransmuter } from '../generated/TransmuterBuffer_alETH/TransmuterBuffer';
 
 function getOrCreateAlchemist(event: ethereum.Event): Alchemist {
   let entity = Alchemist.load(event.address.toHex());
