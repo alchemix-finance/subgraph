@@ -93,6 +93,9 @@ function getOrCreateAlchemist(event: ethereum.Event): Alchemist {
     const alchemistContract = AlchemistContract.bind(event.address);
     let debtToken = getOrCreateDebtToken(alchemistContract.debtToken());
     entity.debtToken = debtToken.id;
+    entity.accounts = [];
+    entity.globalDebt = '0';
+
     entity.save();
   }
 

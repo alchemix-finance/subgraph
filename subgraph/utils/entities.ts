@@ -80,6 +80,7 @@ export function getOrCreateAccount(address: Address): Account {
 
   if (!entity) {
     entity = new Account(id);
+    entity.debt = BigInt.fromI32(0);
     entity.save();
   }
 
@@ -187,6 +188,7 @@ export function getOrCreateTransmuterBalance(transmuter: Transmuter, account: Ac
 
   if (!entity) {
     entity = new TransmuterBalance(id);
+    entity.account = account.id;
     entity.transmuter = transmuter.id;
     entity.balance = BigInt.fromI32(0);
     entity.save();
@@ -253,6 +255,7 @@ export function getOrCreateAlchemistTVLHistory(
 
   if (!entity) {
     entity = new AlchemistTVLHistory(id);
+    entity.event = eventId;
     entity.tvl = state.id;
     entity.alchemist = state.alchemist;
     entity.token = state.token;
