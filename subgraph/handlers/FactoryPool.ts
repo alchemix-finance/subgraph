@@ -206,6 +206,11 @@ export function getOrCreateCoin(
     coin.pool = pool.id;
     coin.token = token.id;
     coin.underlying = coin.id;
+    coin.balance = decimal.ZERO;
+    coin.rate = decimal.ZERO;
+    coin.updated = event.block.timestamp;
+    coin.updatedAtBlock = event.block.number;
+    coin.updatedAtTransaction = event.transaction.hash;
   }
   coin.balance = balance ? decimal.fromBigInt(balance, token.decimals.toI32()) : decimal.ZERO;
   coin.updated = event.block.timestamp;
@@ -229,7 +234,10 @@ export function getOrCreateUnderlyingCoin(
     underlyingCoin.pool = pool.id;
     underlyingCoin.token = token.id;
     underlyingCoin.coin = underlyingCoin.id;
-    // underlyingCoin.balance = balances ? decimal.fromBigInt(balances![i]) : decimal.ZERO
+    underlyingCoin.balance = decimal.ZERO;
+    underlyingCoin.updated = event.block.timestamp;
+    underlyingCoin.updatedAtBlock = event.block.number;
+    underlyingCoin.updatedAtTransaction = event.transaction.hash;
   }
   underlyingCoin.balance = decimal.ZERO;
   underlyingCoin.updated = event.block.timestamp;
