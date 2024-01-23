@@ -17,7 +17,6 @@
     "deploy-dev": "export NETWORK_NAME=mainnet; graph deploy alchemix-finance/alchemix_v2_dev subgraph.js --product hosted-service --skip-migrations",
     "deploy-ftm": "export NETWORK_NAME=fantom; graph deploy alchemix-finance/alchemix_v2_ftm subgraph.ftm.js --product hosted-service --skip-migrations",
     "deploy-peg": "graph deploy alchemix-finance/alcx-curve-dev subgraph.js --product hosted-service --skip-migrations",
-    "deploy-alchemy": "graph deploy alchemix-dev subgraph.js --version-label v0.0.1 --node https://subgraphs.alchemy.com/api/subgraphs/deploy --deploy-key js5R3UE6N675Z --ipfs https://ipfs.satsuma.xyz",
     "lint": "prettier --ignore-path .gitignore --list-different \"**/*.{ts,js,json,yaml}\""
   },
   "devDependencies": {
