@@ -22,6 +22,8 @@ export default {
     createTransmuter('TransmuterV2_USDC'),
     createTransmuter('TransmuterV2_USDT'),
     createTransmuter('TransmuterV2_ETH'),
+    createTransmuter('TransmuterV2_FRAXETH'),
+    createTransmuter('TransmuterV2_FRAX'),
     createTransmuterBuffer('TransmuterBuffer_alUSD'),
     createTransmuterBuffer('TransmuterBuffer_alETH'),
     // createThreePoolAssetManager('ThreePoolAssetManager_alUSD', 17265505, '0x9735F7d3Ea56b454b24fFD74C58E9bD85cfaD31B'),
