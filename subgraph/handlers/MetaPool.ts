@@ -270,29 +270,29 @@ export function saveCoins(pool: Pool, poolAddress: Address, event: ethereum.Even
       BigInt.fromI32(0),
       Address.fromString(ALUSD_PAIRED_ASSETS[i]),
       BigInt.fromI32(i + 1),
-      BigInt.fromI32(1000000).times(BigInt.fromI32(10).pow(dec as u8)),
+      BigInt.fromI32(1000).times(BigInt.fromI32(10).pow(dec as u8)),
       event,
-    ); // 1m
-    saveRate(
-      pool,
-      poolAddress,
-      alToken.address,
-      BigInt.fromI32(0),
-      Address.fromString(ALUSD_PAIRED_ASSETS[i]),
-      BigInt.fromI32(i + 1),
-      BigInt.fromI32(10000000).times(BigInt.fromI32(10).pow(dec as u8)),
-      event,
-    ); // 10m
-    saveRate(
-      pool,
-      poolAddress,
-      alToken.address,
-      BigInt.fromI32(0),
-      Address.fromString(ALUSD_PAIRED_ASSETS[i]),
-      BigInt.fromI32(i + 1),
-      BigInt.fromI32(50000000).times(BigInt.fromI32(10).pow(dec as u8)),
-      event,
-    ); // 50m
+    ); // 1k
+    // saveRate(
+    //   pool,
+    //   poolAddress,
+    //   alToken.address,
+    //   BigInt.fromI32(0),
+    //   Address.fromString(ALUSD_PAIRED_ASSETS[i]),
+    //   BigInt.fromI32(i + 1),
+    //   BigInt.fromI32(10000000).times(BigInt.fromI32(10).pow(dec as u8)),
+    //   event,
+    // ); // 10m
+    // saveRate(
+    //   pool,
+    //   poolAddress,
+    //   alToken.address,
+    //   BigInt.fromI32(0),
+    //   Address.fromString(ALUSD_PAIRED_ASSETS[i]),
+    //   BigInt.fromI32(i + 1),
+    //   BigInt.fromI32(50000000).times(BigInt.fromI32(10).pow(dec as u8)),
+    //   event,
+    // ); // 50m
     getOrCreateUnderlyingCoin(pool, token, i, event);
   }
 }
